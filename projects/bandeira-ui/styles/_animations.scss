@@ -38,6 +38,37 @@
   will-change: auto;
 }
 
+/* -------------------------------------------------------- bdTooltip ----- */
+
+/* O balão é criado no <body>, fora de qualquer componente — por isso o estilo
+   precisa ser global. */
+.bd-tooltip {
+  position: fixed;
+  z-index: var(--bd-z-tooltip, 400);
+  max-width: 260px;
+  padding: 0.4rem 0.65rem;
+  background: var(--bd-fg, #10131c);
+  border-radius: var(--bd-radius-sm, 0.5rem);
+  color: var(--bd-bg, #fff);
+  font-family: var(--bd-font-sans);
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.45;
+  pointer-events: none;
+  animation: bd-tooltip-in 0.14s ease;
+}
+
+@keyframes bd-tooltip-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* ------------------------------------------------------ Acessibilidade --- */
 
 /* Conteúdo lido por leitores de tela, invisível na tela. */

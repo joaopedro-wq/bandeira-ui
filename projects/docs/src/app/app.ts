@@ -1,12 +1,16 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { BdTourComponent } from 'bandeira-ui';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.html',
-  styleUrl: './app.scss'
+  standalone: true,
+  // O <bd-tour /> fica montado uma vez, aqui na raiz — é assim que se usa.
+  imports: [RouterOutlet, BdTourComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <router-outlet />
+    <bd-tour />
+  `,
 })
-export class App {
-  protected readonly title = signal('docs');
-}
+export class App {}

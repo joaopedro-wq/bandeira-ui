@@ -65,17 +65,17 @@ usar — o tree shaking agradece.
 
 ## Componentes
 
-| Componente | Seletor | Destaque |
-|---|---|---|
-| Button | `[bdButton]` | Atributo: serve em `<button>` e `<a>` sem wrapper. Avisa se `iconOnly` não tiver `aria-label` |
-| Card | `<bd-card>` | Variações `interactive` e `dashed` |
-| Chip | `<bd-chip>` | 6 tons, contornado e removível |
-| Field | `<bd-field>` | Liga `for`, `aria-describedby` e `aria-invalid` ao campo sozinho |
-| Input | `[bdInput]` | Estilo encapsulado em `input`, `textarea` e `select` |
-| Tabs | `<bd-tabs>` | `tablist` WAI-ARIA: setas, Home/End, pula desabilitadas |
-| TabPanel | `<bd-tab-panel>` | Fecha o par `tab` ↔ `tabpanel` para leitores de tela |
-| Modal | `<bd-modal>` | Foco preso, Esc, clique no fundo, bottom sheet no mobile |
-| Metric | `<bd-metric>` | Contagem animada ao entrar na viewport |
+**Ações** · Button `[bdButton]` — seletor de atributo, serve em `<button>` e `<a>` sem wrapper; avisa em dev se `iconOnly` não tiver `aria-label`.
+
+**Formulários** · Field `<bd-field>` liga `for`, `aria-describedby` e `aria-invalid` ao campo sozinho · Input `[bdInput]` · Switch `<bd-switch>` e Checkbox `<bd-checkbox>`, ambos com `ControlValueAccessor` e estado indeterminado.
+
+**Navegação** · Tabs `<bd-tabs>` + `<bd-tab-panel>` com `tablist` WAI-ARIA completo (setas, Home/End, pula desabilitadas) · Accordion `<bd-accordion>`.
+
+**Feedback** · Alert `<bd-alert>` (papel ARIA conforme o tom) · Spinner · Skeleton · Progress · Modal `<bd-modal>` com foco preso e bottom sheet no mobile.
+
+**Sobreposição** · Tooltip `[bdTooltip]` no hover **e** no foco · **Tour guiado** `<bd-tour>` + `BdTourService` — onboarding passo a passo que destaca elementos reais da página.
+
+**Conteúdo** · Card · Chip · Avatar (fallback para iniciais, cor derivada do nome) · Badge · Empty State · Metric.
 
 ### Diretivas
 
@@ -85,6 +85,19 @@ usar — o tree shaking agradece.
 | `bdCountUp` | Anima um número de 0 até o valor final |
 
 Ambas usam `IntersectionObserver`, desconectam o observer após revelar e são seguras em SSR.
+
+### Tour guiado
+
+```ts
+private readonly tour = inject(BdTourService);
+
+this.tour.start([
+  { target: '#busca', title: 'Comece aqui', content: 'Encontre qualquer projeto.' },
+  { target: '#filtros', title: 'Refine', content: 'Combine filtros para ver só o que interessa.' },
+]);
+```
+
+Monte `<bd-tour />` uma vez na raiz. O balão é um `role="dialog"` que recebe o foco a cada passo; setas navegam, `Esc` pula, e o alvo é rolado para o centro antes de ser destacado.
 
 ## Temas
 

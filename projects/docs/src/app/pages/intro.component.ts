@@ -65,7 +65,7 @@ import { ThemeService } from '../shared/theme.service';
     </section>
 
     <section class="numbers">
-      <bd-metric [value]="9" label="componentes e diretivas" gradient />
+      <bd-metric [value]="23" label="componentes e diretivas" gradient />
       <bd-metric [value]="0" label="dependências além do CDK" gradient />
       <bd-metric [value]="2" label="temas prontos" gradient />
       <bd-metric [value]="100" suffix="%" label="tipado em TypeScript" gradient />

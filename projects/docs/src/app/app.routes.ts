@@ -68,6 +68,42 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/componentes/metric.page').then((m) => m.MetricPageComponent),
       },
+      {
+        path: 'componentes/controles',
+        title: `Switch & Checkbox · ${T}`,
+        loadComponent: () =>
+          import('./pages/componentes/controles.page').then((m) => m.ControlesPageComponent),
+      },
+      {
+        path: 'componentes/feedback',
+        title: `Feedback · ${T}`,
+        loadComponent: () =>
+          import('./pages/componentes/feedback.page').then((m) => m.FeedbackPageComponent),
+      },
+      {
+        path: 'componentes/accordion',
+        title: `Accordion · ${T}`,
+        loadComponent: () =>
+          import('./pages/componentes/accordion.page').then((m) => m.AccordionPageComponent),
+      },
+      {
+        path: 'componentes/conteudo',
+        title: `Avatar, Badge & Empty State · ${T}`,
+        loadComponent: () =>
+          import('./pages/componentes/conteudo.page').then((m) => m.ConteudoPageComponent),
+      },
+      {
+        path: 'componentes/tooltip',
+        title: `Tooltip · ${T}`,
+        loadComponent: () =>
+          import('./pages/componentes/tooltip.page').then((m) => m.TooltipPageComponent),
+      },
+      {
+        path: 'componentes/tour',
+        title: `Tour guiado · ${T}`,
+        loadComponent: () =>
+          import('./pages/componentes/tour.page').then((m) => m.TourPageComponent),
+      },
 
       /* Diretivas */
       {

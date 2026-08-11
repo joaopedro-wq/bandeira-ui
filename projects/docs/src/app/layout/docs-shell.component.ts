@@ -313,21 +313,38 @@ export class DocsShellComponent {
     },
     {
       label: 'Formulários',
-      items: [{ path: '/componentes/field', label: 'Field & Input' }],
+      items: [
+        { path: '/componentes/field', label: 'Field & Input' },
+        { path: '/componentes/controles', label: 'Switch & Checkbox' },
+      ],
     },
     {
       label: 'Navegação',
-      items: [{ path: '/componentes/tabs', label: 'Tabs' }],
+      items: [
+        { path: '/componentes/tabs', label: 'Tabs' },
+        { path: '/componentes/accordion', label: 'Accordion' },
+      ],
     },
     {
       label: 'Feedback',
-      items: [{ path: '/componentes/modal', label: 'Modal' }],
+      items: [
+        { path: '/componentes/modal', label: 'Modal' },
+        { path: '/componentes/feedback', label: 'Alert, Spinner…' },
+      ],
+    },
+    {
+      label: 'Sobreposição',
+      items: [
+        { path: '/componentes/tooltip', label: 'Tooltip' },
+        { path: '/componentes/tour', label: 'Tour guiado ★' },
+      ],
     },
     {
       label: 'Conteúdo',
       items: [
         { path: '/componentes/card', label: 'Card' },
         { path: '/componentes/chip', label: 'Chip' },
+        { path: '/componentes/conteudo', label: 'Avatar & Badge' },
         { path: '/componentes/metric', label: 'Metric' },
       ],
     },

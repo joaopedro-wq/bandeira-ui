@@ -38,6 +38,12 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
       outline: none;
     }
 
+    /* Sem isto o display:block acima venceria o [hidden] do UA stylesheet
+       e todos os painéis apareceriam ao mesmo tempo. */
+    :host([hidden]) {
+      display: none;
+    }
+
     :host(:focus-visible) {
       box-shadow: var(--bd-focus-ring, 0 0 0 3px rgba(61, 92, 232, 0.3));
       border-radius: var(--bd-radius-sm, 0.5rem);

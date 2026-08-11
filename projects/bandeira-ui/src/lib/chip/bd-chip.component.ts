@@ -53,33 +53,34 @@ export type BdChipTone = 'primary' | 'accent' | 'neutral' | 'success' | 'warning
       white-space: nowrap;
     }
 
-    .bd-chip--primary {
+    /* As classes de tom ficam no host, então precisam de :host(.classe). */
+    :host(.bd-chip--primary) {
       background: var(--bd-primary-soft, rgba(61, 92, 232, 0.1));
       color: var(--bd-primary, #3d5ce8);
     }
-    .bd-chip--accent {
+    :host(.bd-chip--accent) {
       background: var(--bd-accent-soft, rgba(13, 148, 136, 0.1));
       color: var(--bd-accent, #0d9488);
     }
-    .bd-chip--neutral {
+    :host(.bd-chip--neutral) {
       background: var(--bd-surface-hover, #f1f3f9);
       color: var(--bd-fg-muted, #545c70);
     }
-    .bd-chip--success {
+    :host(.bd-chip--success) {
       background: var(--bd-success-soft, rgba(22, 163, 74, 0.1));
       color: var(--bd-success, #16a34a);
     }
-    .bd-chip--warning {
+    :host(.bd-chip--warning) {
       background: var(--bd-warning-soft, rgba(217, 119, 6, 0.1));
       color: var(--bd-warning, #d97706);
     }
-    .bd-chip--danger {
+    :host(.bd-chip--danger) {
       background: var(--bd-danger-soft, rgba(220, 38, 38, 0.1));
       color: var(--bd-danger, #dc2626);
     }
 
     /* Variante contornada: mesma cor, sem preenchimento. */
-    .bd-chip--outlined {
+    :host(.bd-chip--outlined) {
       background: transparent;
       border-color: currentColor;
     }

@@ -36,39 +36,39 @@ export type BdCardPadding = 'none' | 'sm' | 'md' | 'lg';
         box-shadow var(--bd-duration, 0.25s) ease, border-color var(--bd-duration, 0.25s) ease;
     }
 
-    .bd-card--none {
+    /* As classes ficam no host, então precisam de :host(.classe). */
+    :host(.bd-card--none) {
       padding: 0;
     }
-    .bd-card--sm {
+    :host(.bd-card--sm) {
       padding: var(--bd-space-4, 1rem);
     }
-    .bd-card--md {
+    :host(.bd-card--md) {
       padding: var(--bd-space-5, 1.5rem);
     }
-    .bd-card--lg {
+    :host(.bd-card--lg) {
       padding: var(--bd-space-6, 2rem);
     }
 
-    .bd-card--dashed {
+    :host(.bd-card--dashed) {
       border-style: dashed;
       background: transparent;
       box-shadow: none;
     }
 
-    .bd-card--interactive {
+    :host(.bd-card--interactive) {
       cursor: pointer;
     }
-    .bd-card--interactive:hover {
+    :host(.bd-card--interactive:hover) {
       transform: translateY(-4px);
       border-color: var(--bd-border-strong, #cbd2e2);
       box-shadow: var(--bd-shadow-md, 0 8px 24px rgba(16, 19, 28, 0.08));
     }
 
     @media (prefers-reduced-motion: reduce) {
-      :host {
+      :host,
+      :host(.bd-card--interactive:hover) {
         transition: none;
-      }
-      .bd-card--interactive:hover {
         transform: none;
       }
     }

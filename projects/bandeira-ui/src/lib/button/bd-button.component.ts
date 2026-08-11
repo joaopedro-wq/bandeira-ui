@@ -82,75 +82,78 @@ export type BdButtonSize = 'sm' | 'md' | 'lg';
       pointer-events: none;
     }
 
+    /* As classes de variante ficam no elemento host, então precisam de
+       :host(.classe) — um seletor solto só alcançaria filhos do template. */
+
     /* Tamanhos — 44px de altura mínima no md/lg garante alvo de toque. */
-    .bd-button--sm {
+    :host(.bd-button--sm) {
       min-height: 38px;
       padding: 0.45rem 0.95rem;
       font-size: var(--bd-text-sm, 0.875rem);
     }
-    .bd-button--md {
+    :host(.bd-button--md) {
       min-height: 44px;
       padding: 0.7rem 1.4rem;
       font-size: 0.95rem;
     }
-    .bd-button--lg {
+    :host(.bd-button--lg) {
       min-height: 52px;
       padding: 0.9rem 1.9rem;
       font-size: var(--bd-text-lg, 1.125rem);
     }
 
     /* Ícone sozinho: quadrado, sem padding lateral extra. */
-    .bd-button--icon.bd-button--sm {
+    :host(.bd-button--icon.bd-button--sm) {
       width: 38px;
       padding: 0;
     }
-    .bd-button--icon.bd-button--md {
+    :host(.bd-button--icon.bd-button--md) {
       width: 44px;
       padding: 0;
     }
-    .bd-button--icon.bd-button--lg {
+    :host(.bd-button--icon.bd-button--lg) {
       width: 52px;
       padding: 0;
     }
 
-    .bd-button--block {
+    :host(.bd-button--block) {
       display: flex;
       width: 100%;
     }
 
     /* Variantes */
-    .bd-button--primary {
+    :host(.bd-button--primary) {
       background: var(--bd-primary-strong, #2b46c9);
       color: var(--bd-primary-contrast, #fff);
     }
-    .bd-button--primary:hover:not([disabled]) {
+    :host(.bd-button--primary:hover:not([disabled])) {
       background: var(--bd-primary, #3d5ce8);
     }
 
-    .bd-button--ghost {
+    :host(.bd-button--ghost) {
       background: transparent;
       border-color: var(--bd-border-strong, #cbd2e2);
       color: var(--bd-fg, #10131c);
     }
-    .bd-button--ghost:hover:not([disabled]) {
+    :host(.bd-button--ghost:hover:not([disabled])) {
       border-color: var(--bd-primary, #3d5ce8);
       color: var(--bd-primary, #3d5ce8);
       background: var(--bd-primary-soft, rgba(61, 92, 232, 0.1));
     }
 
-    .bd-button--subtle {
+    :host(.bd-button--subtle) {
       background: var(--bd-primary-soft, rgba(61, 92, 232, 0.1));
       color: var(--bd-primary, #3d5ce8);
     }
-    .bd-button--subtle:hover:not([disabled]) {
+    :host(.bd-button--subtle:hover:not([disabled])) {
       background: var(--bd-surface-hover, #f1f3f9);
     }
 
-    .bd-button--danger {
+    :host(.bd-button--danger) {
       background: var(--bd-danger, #dc2626);
       color: var(--bd-danger-contrast, #fff);
     }
-    .bd-button--danger:hover:not([disabled]) {
+    :host(.bd-button--danger:hover:not([disabled])) {
       filter: brightness(1.1);
     }
 

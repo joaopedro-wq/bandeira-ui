@@ -85,11 +85,10 @@ import { DocsPageHeadComponent } from '../../shared/docs-page-head.component';
     </docs-demo>
 
     <div class="callout">
-      <strong>Decisões de acessibilidade.</strong> O balão é um
-      <code>role="dialog"</code> que recebe o foco a cada passo, então leitores de tela anunciam o
-      título e o conteúdo. As setas do teclado navegam, <kbd>Esc</kbd> pula, e o alvo é rolado
-      para o centro da tela antes de ser destacado. Quem tem
-      <code>prefers-reduced-motion</code> ativo não vê as transições de posição.
+      <strong>Decisões de acessibilidade.</strong> O balão é um <code>role="dialog"</code> que
+      recebe o foco a cada passo, então leitores de tela anunciam o título e o conteúdo. As setas do
+      teclado navegam, <kbd>Esc</kbd> pula, e o alvo é rolado para o centro da tela antes de ser
+      destacado. Quem tem <code>prefers-reduced-motion</code> ativo não vê as transições de posição.
     </div>
 
     <h2 class="sec">Posicionamento</h2>
@@ -230,7 +229,7 @@ export class TourPageComponent {
         finish: 'Done',
         skip: 'Skip',
         counter: (atual, total) => `${atual} of ${total}`,
-      }
+      },
     );
   }
 

@@ -27,8 +27,12 @@ export interface DocsApiRow {
         <tbody>
           @for (row of rows(); track row.name) {
             <tr>
-              <td><code class="api__name">{{ row.name }}</code></td>
-              <td><code class="api__type">{{ row.type }}</code></td>
+              <td>
+                <code class="api__name">{{ row.name }}</code>
+              </td>
+              <td>
+                <code class="api__type">{{ row.type }}</code>
+              </td>
               <td>
                 @if (row.default) {
                   <code>{{ row.default }}</code>

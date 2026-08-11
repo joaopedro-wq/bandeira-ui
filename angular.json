@@ -28,7 +28,15 @@
         "test": {
           "builder": "@angular/build:karma",
           "options": {
-            "tsConfig": "projects/bandeira-ui/tsconfig.spec.json"
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
+            "tsConfig": "projects/bandeira-ui/tsconfig.spec.json",
+            "codeCoverage": true,
+            "codeCoverageExclude": [
+              "projects/bandeira-ui/src/**/*.spec.ts"
+            ]
           }
         }
       }

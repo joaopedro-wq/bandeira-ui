@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { BdInputComponent } from './bd-input.component';
 
-let contador = 0;
+let instanceCount = 0;
 
 /**
  * Envelope de campo de formulário: rótulo, controle, dica e mensagem de erro.
@@ -101,7 +101,7 @@ export class BdFieldComponent {
   readonly error = input('');
   readonly required = input(false, { transform: booleanAttribute });
 
-  private readonly uid = contador++;
+  private readonly uid = instanceCount++;
   protected readonly errorId = `bd-field-error-${this.uid}`;
   protected readonly hintId = `bd-field-hint-${this.uid}`;
 

@@ -56,8 +56,10 @@ export type BdButtonSize = 'sm' | 'md' | 'lg';
       text-decoration: none;
       white-space: nowrap;
       cursor: pointer;
-      transition: background var(--bd-duration, 0.25s) ease,
-        border-color var(--bd-duration, 0.25s) ease, color var(--bd-duration, 0.25s) ease,
+      transition:
+        background var(--bd-duration, 0.25s) ease,
+        border-color var(--bd-duration, 0.25s) ease,
+        color var(--bd-duration, 0.25s) ease,
         transform var(--bd-duration-fast, 0.15s) var(--bd-ease, ease),
         box-shadow var(--bd-duration, 0.25s) ease;
     }
@@ -213,7 +215,7 @@ export class BdButtonComponent {
       this.iconOnly() ? 'bd-button--icon' : '',
     ]
       .filter(Boolean)
-      .join(' ')
+      .join(' '),
   );
 
   constructor() {
@@ -222,11 +224,15 @@ export class BdButtonComponent {
     if (ngDevMode) {
       afterNextRender(() => {
         const el = this.host.nativeElement;
-        if (this.iconOnly() && !el.getAttribute('aria-label') && !el.getAttribute('aria-labelledby')) {
+        if (
+          this.iconOnly() &&
+          !el.getAttribute('aria-label') &&
+          !el.getAttribute('aria-labelledby')
+        ) {
           console.warn(
             '[bandeira-ui] <button bdButton iconOnly> precisa de aria-label ou aria-labelledby ' +
               'para ser anunciado por leitores de tela.',
-            el
+            el,
           );
         }
       });

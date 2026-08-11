@@ -56,7 +56,9 @@ import { DocsPageHeadComponent } from '../../shared/docs-page-head.component';
         </bd-chip>
       }
       @if (!filtros().length) {
-        <span class="vazio">Todos removidos — <button type="button" (click)="restaurar()">restaurar</button></span>
+        <span class="vazio"
+          >Todos removidos — <button type="button" (click)="restaurar()">restaurar</button></span
+        >
       }
     </docs-demo>
 

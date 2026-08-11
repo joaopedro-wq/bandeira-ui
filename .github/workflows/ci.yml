@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Formatação, testes e empacotamento
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Verificar formatação
+        run: npm run format:check
+
+      - name: Testes unitários
+        run: npm test
+
+      - name: Empacotar a biblioteca
+        run: npm run build:lib
+
+      - name: Compilar o site de documentação
+        run: npm run build
+
+      # O tarball é o que de fato chega ao npm: gerá-lo no CI garante que a
+      # publicação não dependa de nenhum estado local da máquina de quem publica.
+      - name: Gerar o tarball de publicação
+        run: npm pack ./dist/bandeira-ui --pack-destination ./dist
+
+      - name: Publicar artefatos
+        uses: actions/upload-artifact@v4
+        with:
+          name: bandeira-ui-package
+          path: dist/*.tgz
+          if-no-files-found: error

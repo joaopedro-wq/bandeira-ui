@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, ElementRef, inject, input, model } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  input,
+  model,
+} from '@angular/core';
 
 export interface BdTab {
   id: string;
@@ -74,8 +81,10 @@ export interface BdTab {
       font-size: 0.92rem;
       font-weight: var(--bd-weight-semibold, 600);
       cursor: pointer;
-      transition: color var(--bd-duration, 0.25s) ease,
-        border-color var(--bd-duration, 0.25s) ease, background var(--bd-duration, 0.25s) ease,
+      transition:
+        color var(--bd-duration, 0.25s) ease,
+        border-color var(--bd-duration, 0.25s) ease,
+        background var(--bd-duration, 0.25s) ease,
         transform var(--bd-duration-fast, 0.15s) var(--bd-ease, ease);
     }
 
@@ -127,42 +136,43 @@ export class BdTabsComponent {
   onKeydown(event: KeyboardEvent, index: number) {
     const tabs = this.tabs();
     const total = tabs.length;
-    let destino: number | null = null;
+    let target: number | null = null;
 
     switch (event.key) {
       case 'ArrowRight':
-        destino = this.proximaHabilitada(index, 1);
+        target = this.nextEnabled(index, 1);
         break;
       case 'ArrowLeft':
-        destino = this.proximaHabilitada(index, -1);
+        target = this.nextEnabled(index, -1);
         break;
       case 'Home':
-        destino = this.proximaHabilitada(-1, 1);
+        target = this.nextEnabled(-1, 1);
         break;
       case 'End':
-        destino = this.proximaHabilitada(total, -1);
+        target = this.nextEnabled(total, -1);
         break;
     }
 
-    if (destino === null) return;
+    if (target === null) return;
 
     event.preventDefault();
-    this.active.set(tabs[destino].id);
+    this.active.set(tabs[target].id);
 
-    // Move o foco junto com a seleção, como manda o padrão de tablist.
-    this.host.nativeElement
-      .querySelectorAll<HTMLButtonElement>('.bd-tabs__tab')
-      [destino]?.focus();
+    // O foco acompanha a seleção, conforme o padrão de `tablist`.
+    this.host.nativeElement.querySelectorAll<HTMLButtonElement>('.bd-tabs__tab')[target]?.focus();
   }
 
-  /** Caminha na direção dada pulando abas desabilitadas, com volta circular. */
-  private proximaHabilitada(inicio: number, passo: number): number | null {
+  /**
+   * Caminha na direção informada ignorando abas desabilitadas, com retorno
+   * circular. Devolve `null` quando não há nenhuma aba habilitada.
+   */
+  private nextEnabled(start: number, step: number): number | null {
     const tabs = this.tabs();
     const total = tabs.length;
 
     for (let i = 1; i <= total; i++) {
-      const idx = (((inicio + passo * i) % total) + total) % total;
-      if (!tabs[idx].disabled) return idx;
+      const index = (((start + step * i) % total) + total) % total;
+      if (!tabs[index].disabled) return index;
     }
 
     return null;

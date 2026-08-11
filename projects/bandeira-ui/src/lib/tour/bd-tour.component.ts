@@ -2,9 +2,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   DOCUMENT,
+  DestroyRef,
   ElementRef,
   HostListener,
-  afterNextRender,
   effect,
   inject,
   input,
@@ -13,65 +13,73 @@ import {
 } from '@angular/core';
 import { BdTourPlacement, BdTourService } from './bd-tour.service';
 
-interface Retangulo {
+interface Rect {
   top: number;
   left: number;
   width: number;
   height: number;
 }
 
-interface PosicaoBalao {
+interface PopoverPosition {
   top: number;
   left: number;
-  lado: Exclude<BdTourPlacement, 'auto'> | 'center';
+  side: Exclude<BdTourPlacement, 'auto'> | 'center';
 }
 
-const PADDING_DESTAQUE = 8;
-const ESPACO_BALAO = 14;
-const LARGURA_BALAO = 320;
+const SPOT_PADDING = 8;
+const POPOVER_GAP = 14;
+const POPOVER_WIDTH = 320;
+const POPOVER_FALLBACK_HEIGHT = 220;
+const VIEWPORT_MARGIN = 16;
+
+/** Tempo estimado para a rolagem suave assentar antes da medição. */
+const SCROLL_SETTLE_MS = 320;
 
 /**
- * Camada visual do tour guiado. Monte uma vez, normalmente no componente raiz:
+ * Camada de apresentação do tour guiado. Monte uma única vez, normalmente no
+ * componente raiz:
  *
  * ```html
  * <router-outlet />
  * <bd-tour />
  * ```
  *
- * O controle fica no {@link BdTourService}. O destaque recorta o elemento alvo
- * com uma sombra gigante, o balão se posiciona no lado que couber e o foco vai
- * para dentro dele — Esc pula, setas navegam.
+ * O controle pertence ao {@link BdTourService}. O destaque recorta o elemento
+ * alvo por meio de uma sombra projetada maior que a área visível, o balão é
+ * posicionado no primeiro lado com espaço disponível e recebe o foco a cada
+ * passo — `Esc` encerra, setas navegam.
  */
 @Component({
   selector: 'bd-tour',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    @if (tour.ativo() && tour.step(); as passo) {
+    @if (tour.active() && tour.step(); as step) {
       <div class="bd-tour" role="presentation">
-        <!-- Recorte: a sombra gigante escurece tudo, menos este retângulo. -->
+        <!-- A sombra projetada maior que a tela escurece tudo, exceto este
+             retângulo — o recorte não exige SVG nem máscara. -->
         <div
           class="bd-tour__spot"
-          [class.bd-tour__spot--vazio]="!temAlvo()"
-          [style.top.px]="destaque().top"
-          [style.left.px]="destaque().left"
-          [style.width.px]="destaque().width"
-          [style.height.px]="destaque().height"
+          [class.bd-tour__spot--empty]="!hasTarget()"
+          [style.top.px]="spot().top"
+          [style.left.px]="spot().left"
+          [style.width.px]="spot().width"
+          [style.height.px]="spot().height"
         ></div>
 
         <!-- Captura o clique fora sem cobrir o alvo destacado. -->
         <div class="bd-tour__catch" (click)="tour.skip()"></div>
 
         <div
-          #balao
+          #popover
           class="bd-tour__popover"
-          [class]="'bd-tour__popover--' + posicao().lado"
-          [style.top.px]="posicao().top"
-          [style.left.px]="posicao().left"
+          [class]="'bd-tour__popover--' + position().side"
+          [style.top.px]="position().top"
+          [style.left.px]="position().left"
           role="dialog"
           aria-modal="true"
-          [attr.aria-labelledby]="tituloId"
-          [attr.aria-describedby]="conteudoId"
+          [attr.aria-labelledby]="titleId"
+          [attr.aria-describedby]="contentId"
           tabindex="-1"
         >
           <span class="bd-tour__arrow" aria-hidden="true"></span>
@@ -80,8 +88,8 @@ const LARGURA_BALAO = 320;
             {{ tour.labels().counter(tour.index() + 1, tour.total()) }}
           </span>
 
-          <h2 class="bd-tour__title" [id]="tituloId">{{ passo.title }}</h2>
-          <p class="bd-tour__content" [id]="conteudoId">{{ passo.content }}</p>
+          <h2 class="bd-tour__title" [id]="titleId">{{ step.title }}</h2>
+          <p class="bd-tour__content" [id]="contentId">{{ step.content }}</p>
 
           <div class="bd-tour__dots" aria-hidden="true">
             @for (s of tour.steps(); track $index) {
@@ -95,13 +103,17 @@ const LARGURA_BALAO = 320;
             </button>
 
             <div class="bd-tour__nav">
-              @if (!tour.primeiro()) {
+              @if (!tour.isFirst()) {
                 <button type="button" class="bd-tour__btn" (click)="tour.prev()">
                   {{ tour.labels().prev }}
                 </button>
               }
-              <button type="button" class="bd-tour__btn bd-tour__btn--primary" (click)="tour.next()">
-                {{ passo.nextLabel ?? (tour.ultimo() ? tour.labels().finish : tour.labels().next) }}
+              <button
+                type="button"
+                class="bd-tour__btn bd-tour__btn--primary"
+                (click)="tour.next()"
+              >
+                {{ step.nextLabel ?? (tour.isLast() ? tour.labels().finish : tour.labels().next) }}
               </button>
             </div>
           </div>
@@ -125,13 +137,16 @@ const LARGURA_BALAO = 320;
       box-shadow: 0 0 0 9999px rgba(3, 5, 10, 0.68);
       outline: 2px solid var(--bd-primary, #3d5ce8);
       outline-offset: 2px;
-      transition: top 0.3s var(--bd-ease, ease), left 0.3s var(--bd-ease, ease),
-        width 0.3s var(--bd-ease, ease), height 0.3s var(--bd-ease, ease);
+      transition:
+        top 0.3s var(--bd-ease, ease),
+        left 0.3s var(--bd-ease, ease),
+        width 0.3s var(--bd-ease, ease),
+        height 0.3s var(--bd-ease, ease);
       pointer-events: none;
     }
 
-    /* Passo sem alvo: só escurece, sem anel de destaque. */
-    .bd-tour__spot--vazio {
+    /* Passo sem alvo: apenas o escurecimento, sem anel de destaque. */
+    .bd-tour__spot--empty {
       outline: none;
     }
 
@@ -153,7 +168,9 @@ const LARGURA_BALAO = 320;
       color: var(--bd-fg, #10131c);
       pointer-events: auto;
       animation: bd-tour-in 0.24s var(--bd-ease, ease);
-      transition: top 0.3s var(--bd-ease, ease), left 0.3s var(--bd-ease, ease);
+      transition:
+        top 0.3s var(--bd-ease, ease),
+        left 0.3s var(--bd-ease, ease);
     }
 
     .bd-tour__popover:focus {
@@ -243,7 +260,9 @@ const LARGURA_BALAO = 320;
       height: 6px;
       background: var(--bd-border-strong, #cbd2e2);
       border-radius: 50%;
-      transition: background 0.2s ease, width 0.2s ease;
+      transition:
+        background 0.2s ease,
+        width 0.2s ease;
     }
 
     .bd-tour__dot.is-active {
@@ -273,7 +292,10 @@ const LARGURA_BALAO = 320;
       font-size: 0.85rem;
       font-weight: var(--bd-weight-semibold, 600);
       cursor: pointer;
-      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+      transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
     }
 
     .bd-tour__skip {
@@ -326,60 +348,106 @@ export class BdTourComponent {
   readonly tour = inject(BdTourService);
 
   /** Espaço extra em volta do elemento destacado. */
-  readonly spotPadding = input(PADDING_DESTAQUE);
-  /** Rola o alvo para o centro da tela antes de destacar. */
+  readonly spotPadding = input(SPOT_PADDING);
+  /** Rola o alvo até o centro da área visível antes de destacá-lo. */
   readonly scrollIntoView = input(true);
 
   private readonly document = inject(DOCUMENT);
-  private readonly balao = viewChild<ElementRef<HTMLElement>>('balao');
+  private readonly popover = viewChild<ElementRef<HTMLElement>>('popover');
 
-  protected readonly tituloId = 'bd-tour-title';
-  protected readonly conteudoId = 'bd-tour-content';
+  protected readonly titleId = 'bd-tour-title';
+  protected readonly contentId = 'bd-tour-content';
 
-  protected readonly destaque = signal<Retangulo>({ top: 0, left: 0, width: 0, height: 0 });
-  protected readonly posicao = signal<PosicaoBalao>({ top: 0, left: 0, lado: 'center' });
-  protected readonly temAlvo = signal(false);
+  protected readonly spot = signal<Rect>({ top: 0, left: 0, width: 0, height: 0 });
+  protected readonly position = signal<PopoverPosition>({ top: 0, left: 0, side: 'center' });
+  protected readonly hasTarget = signal(false);
+
+  private settleTimer?: ReturnType<typeof setTimeout>;
+  private frame?: number;
+
+  /**
+   * Reagenda a medição no ritmo do compositor.
+   *
+   * Rolagem e redimensionamento apenas remedem: **não** movem o foco. Medir e
+   * focar são operações distintas justamente porque a rolagem suave do próprio
+   * passo emite dezenas de eventos — devolver o foco em cada um deles tornaria
+   * a página impossível de percorrer durante o tour.
+   */
+  private readonly onViewportChange = () => {
+    if (!this.tour.active()) return;
+
+    const view = this.document.defaultView;
+    if (!view) return;
+
+    if (this.frame !== undefined) view.cancelAnimationFrame(this.frame);
+    this.frame = view.requestAnimationFrame(() => {
+      this.frame = undefined;
+      this.measure();
+    });
+  };
 
   constructor() {
-    // Recalcula sempre que o passo muda.
+    // Cada mudança de passo remede e devolve o foco ao balão — uma única vez.
     effect(() => {
-      const passo = this.tour.step();
-      if (!this.tour.ativo() || !passo) return;
+      const step = this.tour.step();
+      const active = this.tour.active();
+      const scroll = this.scrollIntoView();
 
-      const alvo = passo.target
-        ? this.document.querySelector<HTMLElement>(passo.target)
-        : null;
+      clearTimeout(this.settleTimer);
+      if (!active || !step) return;
 
-      if (alvo && this.scrollIntoView()) {
-        alvo.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' });
+      const target = this.resolveTarget(step.target);
+      const shouldScroll = !!target && scroll;
+
+      if (shouldScroll) {
+        target.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' });
       }
 
-      // Espera o scroll assentar antes de medir.
-      setTimeout(() => this.medir(), alvo && this.scrollIntoView() ? 320 : 0);
+      // A medição espera a rolagem assentar; sem rolagem, apenas o próximo
+      // ciclo de tarefas, para que o balão do passo atual já esteja no DOM.
+      this.settleTimer = setTimeout(
+        () => {
+          this.measure();
+          this.focusPopover();
+        },
+        shouldScroll ? SCROLL_SETTLE_MS : 0,
+      );
     });
 
-    afterNextRender(() => this.medir());
-  }
+    const view = this.document.defaultView;
+    // Captura na fase de descida: alcança a rolagem de qualquer ancestral, não
+    // apenas a da janela. Passivo, para não competir com o compositor.
+    view?.addEventListener('scroll', this.onViewportChange, { passive: true, capture: true });
+    view?.addEventListener('resize', this.onViewportChange, { passive: true });
 
-  @HostListener('window:resize')
-  @HostListener('window:scroll')
-  onViewportChange() {
-    if (this.tour.ativo()) {
-      this.medir();
-    }
+    inject(DestroyRef).onDestroy(() => {
+      clearTimeout(this.settleTimer);
+      if (this.frame !== undefined) view?.cancelAnimationFrame(this.frame);
+      view?.removeEventListener('scroll', this.onViewportChange, true);
+      view?.removeEventListener('resize', this.onViewportChange);
+    });
   }
 
   @HostListener('document:keydown', ['$event'])
-  onKeydown(event: KeyboardEvent) {
-    if (!this.tour.ativo()) return;
+  protected onKeydown(event: KeyboardEvent): void {
+    if (!this.tour.active()) return;
+
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      this.tour.skip();
+      return;
+    }
+
+    // Setas e Enter só navegam com o foco dentro do balão. Sem essa restrição,
+    // um Enter destinado a um formulário da página avançaria o tour e teria a
+    // ação original cancelada.
+    if (!this.isFocusWithinPopover()) return;
 
     switch (event.key) {
-      case 'Escape':
-        event.preventDefault();
-        this.tour.skip();
-        break;
       case 'ArrowRight':
       case 'Enter':
+        // O Enter sobre um dos botões do balão já é tratado pelo próprio botão.
+        if (this.isFocusOnControl(event)) return;
         event.preventDefault();
         this.tour.next();
         break;
@@ -390,103 +458,140 @@ export class BdTourComponent {
     }
   }
 
-  /** Mede o alvo e escolhe onde o balão cabe. */
-  private medir() {
-    const passo = this.tour.step();
-    if (!passo) return;
+  /**
+   * Resolve o alvo do passo. Um seletor malformado não deve derrubar a
+   * aplicação: o passo degrada para a apresentação centralizada.
+   */
+  private resolveTarget(selector: string | undefined): HTMLElement | null {
+    if (!selector) return null;
 
-    const alvo = passo.target ? this.document.querySelector<HTMLElement>(passo.target) : null;
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
+    try {
+      return this.document.querySelector<HTMLElement>(selector);
+    } catch {
+      if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+        console.warn(`[bandeira-ui] Seletor de passo inválido no tour: "${selector}".`);
+      }
+      return null;
+    }
+  }
+
+  /** Mede o alvo e reposiciona destaque e balão. Não altera o foco. */
+  private measure(): void {
+    const step = this.tour.step();
+    const view = this.document.defaultView;
+    if (!step || !view) return;
+
+    const target = this.resolveTarget(step.target);
+    const vw = view.innerWidth;
+    const vh = view.innerHeight;
     const pad = this.spotPadding();
 
-    if (!alvo) {
-      // Sem alvo: escurece a tela toda e centraliza o balão.
-      this.temAlvo.set(false);
-      this.destaque.set({ top: vh / 2, left: vw / 2, width: 0, height: 0 });
-      this.posicao.set({
-        top: vh / 2 - 110,
-        left: Math.max(16, vw / 2 - LARGURA_BALAO / 2),
-        lado: 'center',
+    if (!target) {
+      // Sem alvo: a tela inteira escurece e o balão é centralizado.
+      const height = this.popoverHeight();
+      this.hasTarget.set(false);
+      this.spot.set({ top: vh / 2, left: vw / 2, width: 0, height: 0 });
+      this.position.set({
+        top: Math.max(VIEWPORT_MARGIN, vh / 2 - height / 2),
+        left: Math.max(VIEWPORT_MARGIN, vw / 2 - POPOVER_WIDTH / 2),
+        side: 'center',
       });
-      this.focarBalao();
       return;
     }
 
-    const r = alvo.getBoundingClientRect();
-    this.temAlvo.set(true);
-    this.destaque.set({
-      top: r.top - pad,
-      left: r.left - pad,
-      width: r.width + pad * 2,
-      height: r.height + pad * 2,
+    const rect = target.getBoundingClientRect();
+    this.hasTarget.set(true);
+    this.spot.set({
+      top: rect.top - pad,
+      left: rect.left - pad,
+      width: rect.width + pad * 2,
+      height: rect.height + pad * 2,
     });
 
-    this.posicao.set(this.calcularPosicao(r, passo.placement ?? 'auto', vw, vh));
-    this.focarBalao();
+    this.position.set(this.resolvePosition(rect, step.placement ?? 'auto', vw, vh));
   }
 
   /**
-   * Escolhe o lado com espaço suficiente. Com `auto`, tenta embaixo, em cima,
-   * à direita e à esquerda, nessa ordem; se nada couber, centraliza.
+   * Escolhe o primeiro lado com espaço suficiente. Em `auto`, a ordem é
+   * abaixo, acima, direita e esquerda; sem espaço em nenhum, centraliza.
    */
-  private calcularPosicao(
-    r: DOMRect,
-    preferido: BdTourPlacement,
+  private resolvePosition(
+    rect: DOMRect,
+    preferred: BdTourPlacement,
     vw: number,
-    vh: number
-  ): PosicaoBalao {
-    const alturaEstimada = 220;
+    vh: number,
+  ): PopoverPosition {
+    // A altura real do balão, e não uma estimativa: passos com texto longo
+    // ocupam bem mais que o valor nominal e escolheriam o lado errado.
+    const height = this.popoverHeight();
     const pad = this.spotPadding();
 
-    const cabe = {
-      bottom: vh - r.bottom - pad > alturaEstimada + ESPACO_BALAO,
-      top: r.top - pad > alturaEstimada + ESPACO_BALAO,
-      right: vw - r.right - pad > LARGURA_BALAO + ESPACO_BALAO,
-      left: r.left - pad > LARGURA_BALAO + ESPACO_BALAO,
+    const fits = {
+      bottom: vh - rect.bottom - pad > height + POPOVER_GAP,
+      top: rect.top - pad > height + POPOVER_GAP,
+      right: vw - rect.right - pad > POPOVER_WIDTH + POPOVER_GAP,
+      left: rect.left - pad > POPOVER_WIDTH + POPOVER_GAP,
     };
 
-    const ordem: Exclude<BdTourPlacement, 'auto'>[] =
-      preferido === 'auto'
+    const order: Exclude<BdTourPlacement, 'auto'>[] =
+      preferred === 'auto'
         ? ['bottom', 'top', 'right', 'left']
-        : [preferido, 'bottom', 'top', 'right', 'left'];
+        : [preferred, 'bottom', 'top', 'right', 'left'];
 
-    const lado = ordem.find((l) => cabe[l]);
+    const side = order.find((candidate) => fits[candidate]);
 
-    if (!lado) {
+    if (!side) {
       return {
-        top: Math.max(16, vh / 2 - alturaEstimada / 2),
-        left: Math.max(16, vw / 2 - LARGURA_BALAO / 2),
-        lado: 'center',
+        top: Math.max(VIEWPORT_MARGIN, vh / 2 - height / 2),
+        left: Math.max(VIEWPORT_MARGIN, vw / 2 - POPOVER_WIDTH / 2),
+        side: 'center',
       };
     }
 
-    // Mantém o balão dentro da tela nos dois eixos.
-    const limitarX = (x: number) => Math.min(Math.max(16, x), vw - LARGURA_BALAO - 16);
-    const limitarY = (y: number) => Math.min(Math.max(16, y), vh - alturaEstimada - 16);
+    // Mantém o balão dentro da área visível nos dois eixos.
+    const clampX = (x: number) =>
+      Math.min(Math.max(VIEWPORT_MARGIN, x), vw - POPOVER_WIDTH - VIEWPORT_MARGIN);
+    const clampY = (y: number) =>
+      Math.min(Math.max(VIEWPORT_MARGIN, y), vh - height - VIEWPORT_MARGIN);
 
-    switch (lado) {
+    switch (side) {
       case 'bottom':
-        return { top: r.bottom + pad + ESPACO_BALAO, left: limitarX(r.left - pad), lado };
+        return { top: rect.bottom + pad + POPOVER_GAP, left: clampX(rect.left - pad), side };
       case 'top':
         return {
-          top: r.top - pad - ESPACO_BALAO - alturaEstimada,
-          left: limitarX(r.left - pad),
-          lado,
+          top: rect.top - pad - POPOVER_GAP - height,
+          left: clampX(rect.left - pad),
+          side,
         };
       case 'right':
-        return { top: limitarY(r.top - pad), left: r.right + pad + ESPACO_BALAO, lado };
+        return { top: clampY(rect.top - pad), left: rect.right + pad + POPOVER_GAP, side };
       case 'left':
         return {
-          top: limitarY(r.top - pad),
-          left: r.left - pad - ESPACO_BALAO - LARGURA_BALAO,
-          lado,
+          top: clampY(rect.top - pad),
+          left: rect.left - pad - POPOVER_GAP - POPOVER_WIDTH,
+          side,
         };
     }
   }
 
-  /** Leva o foco ao balão para que leitores de tela anunciem o passo. */
-  private focarBalao() {
-    queueMicrotask(() => this.balao()?.nativeElement.focus());
+  private popoverHeight(): number {
+    return this.popover()?.nativeElement.offsetHeight || POPOVER_FALLBACK_HEIGHT;
+  }
+
+  /** Leva o foco ao balão para que o leitor de tela anuncie o passo. */
+  private focusPopover(): void {
+    this.popover()?.nativeElement.focus({ preventScroll: true });
+  }
+
+  private isFocusWithinPopover(): boolean {
+    const element = this.popover()?.nativeElement;
+    const active = this.document.activeElement;
+    return !!element && !!active && element.contains(active);
+  }
+
+  private isFocusOnControl(event: KeyboardEvent): boolean {
+    return event.key === 'Enter' && (event.target as HTMLElement | null)?.tagName === 'BUTTON';
   }
 }
+
+declare const ngDevMode: boolean | undefined;

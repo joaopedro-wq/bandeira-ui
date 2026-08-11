@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, DOCUMENT, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DOCUMENT,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { BdButtonComponent, BdCardComponent, BdChipComponent } from 'bandeira-ui';
 
 interface TokenInfo {
@@ -15,8 +22,8 @@ interface TokenInfo {
     <header class="page-head">
       <h1>Tokens e temas</h1>
       <p>
-        Nenhum componente tem cor fixa. Tudo lê CSS custom properties — mudar a identidade visual
-        é editar um bloco de CSS, não caçar sobrescrita componente por componente.
+        Nenhum componente tem cor fixa. Tudo lê CSS custom properties — mudar a identidade visual é
+        editar um bloco de CSS, não caçar sobrescrita componente por componente.
       </p>
     </header>
 
@@ -29,7 +36,11 @@ interface TokenInfo {
         <label>
           Cor primária
           <span class="ctrl">
-            <input type="color" [value]="primaria()" (input)="primaria.set($any($event.target).value)" />
+            <input
+              type="color"
+              [value]="primaria()"
+              (input)="primaria.set($any($event.target).value)"
+            />
             <code>{{ primaria() }}</code>
           </span>
         </label>
@@ -37,7 +48,11 @@ interface TokenInfo {
         <label>
           Cor de destaque
           <span class="ctrl">
-            <input type="color" [value]="destaque()" (input)="destaque.set($any($event.target).value)" />
+            <input
+              type="color"
+              [value]="destaque()"
+              (input)="destaque.set($any($event.target).value)"
+            />
             <code>{{ destaque() }}</code>
           </span>
         </label>
@@ -45,7 +60,13 @@ interface TokenInfo {
         <label>
           Raio da borda
           <span class="ctrl">
-            <input type="range" min="0" max="24" [value]="raio()" (input)="raio.set(+$any($event.target).value)" />
+            <input
+              type="range"
+              min="0"
+              max="24"
+              [value]="raio()"
+              (input)="raio.set(+$any($event.target).value)"
+            />
             <code>{{ raio() }}px</code>
           </span>
         </label>
@@ -68,9 +89,7 @@ interface TokenInfo {
           </div>
         </bd-card>
 
-        <p class="playground__code">
-          O que o playground faz é só isto:
-        </p>
+        <p class="playground__code">O que o playground faz é só isto:</p>
         <pre><code>:root &#123;
   --bd-primary: {{ primaria() }};
   --bd-accent: {{ destaque() }};
@@ -384,76 +403,86 @@ export class TokensComponent {
     this.raio.set(8);
   }
 
-  readonly grupos: { titulo: string; descricao: string; tipo: 'cor' | 'valor'; tokens: TokenInfo[] }[] =
-    [
-      {
-        titulo: 'Cores de superfície',
-        descricao: 'Os planos de fundo e as bordas que estruturam a interface.',
-        tipo: 'cor',
-        tokens: [
-          { token: '--bd-bg', descricao: 'Fundo da página' },
-          { token: '--bd-bg-elevated', descricao: 'Fundo elevado' },
-          { token: '--bd-surface', descricao: 'Cartões e painéis' },
-          { token: '--bd-surface-hover', descricao: 'Superfície em hover' },
-          { token: '--bd-border', descricao: 'Borda padrão' },
-          { token: '--bd-border-strong', descricao: 'Borda de destaque' },
-        ],
-      },
-      {
-        titulo: 'Cores de texto',
-        descricao: 'Três níveis de hierarquia — use o mais fraco para informação secundária.',
-        tipo: 'cor',
-        tokens: [
-          { token: '--bd-fg', descricao: 'Texto principal' },
-          { token: '--bd-fg-muted', descricao: 'Texto de apoio' },
-          { token: '--bd-fg-subtle', descricao: 'Texto discreto' },
-        ],
-      },
-      {
-        titulo: 'Cores semânticas',
-        descricao: 'Cada uma tem a variante "soft" para fundos suaves do mesmo tom.',
-        tipo: 'cor',
-        tokens: [
-          { token: '--bd-primary', descricao: 'Ação principal' },
-          { token: '--bd-accent', descricao: 'Destaque' },
-          { token: '--bd-success', descricao: 'Sucesso' },
-          { token: '--bd-warning', descricao: 'Atenção' },
-          { token: '--bd-danger', descricao: 'Erro e ação destrutiva' },
-          { token: '--bd-info', descricao: 'Informação' },
-        ],
-      },
-      {
-        titulo: 'Tipografia',
-        descricao: 'Escala de tamanhos e pesos usada por todos os componentes.',
-        tipo: 'valor',
-        tokens: [
-          { token: '--bd-font-sans', descricao: 'Inter, system-ui' },
-          { token: '--bd-font-mono', descricao: 'ui-monospace' },
-          { token: '--bd-text-xs → --bd-text-3xl', descricao: '0.75rem → 2.25rem' },
-          { token: '--bd-weight-normal → bold', descricao: '400 → 700' },
-        ],
-      },
-      {
-        titulo: 'Espaçamento, forma e elevação',
-        descricao: 'Escala de espaço, raios e sombras.',
-        tipo: 'valor',
-        tokens: [
-          { token: '--bd-space-1 → --bd-space-7', descricao: '0.25rem → 3rem' },
-          { token: '--bd-radius-sm / --bd-radius / --bd-radius-lg', descricao: '0.5 / 0.875 / 1.25rem' },
-          { token: '--bd-radius-full', descricao: '9999px (pílulas e avatares)' },
-          { token: '--bd-shadow-sm / md / lg', descricao: 'Repouso, hover e sobreposição' },
-        ],
-      },
-      {
-        titulo: 'Movimento e camadas',
-        descricao: 'Durações, curva de easing e ordem de empilhamento.',
-        tipo: 'valor',
-        tokens: [
-          { token: '--bd-ease', descricao: 'cubic-bezier(0.16, 1, 0.3, 1)' },
-          { token: '--bd-duration-fast / --bd-duration / --bd-duration-slow', descricao: '0.15s / 0.25s / 0.5s' },
-          { token: '--bd-z-dropdown → --bd-z-tooltip', descricao: '100 → 400' },
-          { token: '--bd-focus-ring', descricao: 'Anel de foco compartilhado' },
-        ],
-      },
-    ];
+  readonly grupos: {
+    titulo: string;
+    descricao: string;
+    tipo: 'cor' | 'valor';
+    tokens: TokenInfo[];
+  }[] = [
+    {
+      titulo: 'Cores de superfície',
+      descricao: 'Os planos de fundo e as bordas que estruturam a interface.',
+      tipo: 'cor',
+      tokens: [
+        { token: '--bd-bg', descricao: 'Fundo da página' },
+        { token: '--bd-bg-elevated', descricao: 'Fundo elevado' },
+        { token: '--bd-surface', descricao: 'Cartões e painéis' },
+        { token: '--bd-surface-hover', descricao: 'Superfície em hover' },
+        { token: '--bd-border', descricao: 'Borda padrão' },
+        { token: '--bd-border-strong', descricao: 'Borda de destaque' },
+      ],
+    },
+    {
+      titulo: 'Cores de texto',
+      descricao: 'Três níveis de hierarquia — use o mais fraco para informação secundária.',
+      tipo: 'cor',
+      tokens: [
+        { token: '--bd-fg', descricao: 'Texto principal' },
+        { token: '--bd-fg-muted', descricao: 'Texto de apoio' },
+        { token: '--bd-fg-subtle', descricao: 'Texto discreto' },
+      ],
+    },
+    {
+      titulo: 'Cores semânticas',
+      descricao: 'Cada uma tem a variante "soft" para fundos suaves do mesmo tom.',
+      tipo: 'cor',
+      tokens: [
+        { token: '--bd-primary', descricao: 'Ação principal' },
+        { token: '--bd-accent', descricao: 'Destaque' },
+        { token: '--bd-success', descricao: 'Sucesso' },
+        { token: '--bd-warning', descricao: 'Atenção' },
+        { token: '--bd-danger', descricao: 'Erro e ação destrutiva' },
+        { token: '--bd-info', descricao: 'Informação' },
+      ],
+    },
+    {
+      titulo: 'Tipografia',
+      descricao: 'Escala de tamanhos e pesos usada por todos os componentes.',
+      tipo: 'valor',
+      tokens: [
+        { token: '--bd-font-sans', descricao: 'Inter, system-ui' },
+        { token: '--bd-font-mono', descricao: 'ui-monospace' },
+        { token: '--bd-text-xs → --bd-text-3xl', descricao: '0.75rem → 2.25rem' },
+        { token: '--bd-weight-normal → bold', descricao: '400 → 700' },
+      ],
+    },
+    {
+      titulo: 'Espaçamento, forma e elevação',
+      descricao: 'Escala de espaço, raios e sombras.',
+      tipo: 'valor',
+      tokens: [
+        { token: '--bd-space-1 → --bd-space-7', descricao: '0.25rem → 3rem' },
+        {
+          token: '--bd-radius-sm / --bd-radius / --bd-radius-lg',
+          descricao: '0.5 / 0.875 / 1.25rem',
+        },
+        { token: '--bd-radius-full', descricao: '9999px (pílulas e avatares)' },
+        { token: '--bd-shadow-sm / md / lg', descricao: 'Repouso, hover e sobreposição' },
+      ],
+    },
+    {
+      titulo: 'Movimento e camadas',
+      descricao: 'Durações, curva de easing e ordem de empilhamento.',
+      tipo: 'valor',
+      tokens: [
+        { token: '--bd-ease', descricao: 'cubic-bezier(0.16, 1, 0.3, 1)' },
+        {
+          token: '--bd-duration-fast / --bd-duration / --bd-duration-slow',
+          descricao: '0.15s / 0.25s / 0.5s',
+        },
+        { token: '--bd-z-dropdown → --bd-z-tooltip', descricao: '100 → 400' },
+        { token: '--bd-focus-ring', descricao: 'Anel de foco compartilhado' },
+      ],
+    },
+  ];
 }

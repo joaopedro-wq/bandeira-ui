@@ -220,7 +220,8 @@ export class FeedbackPageComponent {
       name: 'tone',
       type: "'info' | 'success' | 'warning' | 'danger'",
       default: "'info'",
-      description: 'Define a cor e o papel ARIA (alert para warning/danger, status para os demais).',
+      description:
+        'Define a cor e o papel ARIA (alert para warning/danger, status para os demais).',
     },
     { name: 'title', type: 'string', default: "''", description: 'Título em negrito.' },
     {

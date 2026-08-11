@@ -33,7 +33,9 @@ body {
   font-size: var(--bd-text-base);
   line-height: var(--bd-leading-normal);
   -webkit-font-smoothing: antialiased;
-  transition: background-color var(--bd-duration) ease, color var(--bd-duration) ease;
+  transition:
+    background-color var(--bd-duration) ease,
+    color var(--bd-duration) ease;
 }
 
 img,

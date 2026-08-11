@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { DocsLogoComponent } from '../shared/docs-logo.component';
 import { ThemeService } from '../shared/theme.service';
 
 interface NavGroup {
@@ -10,16 +11,15 @@ interface NavGroup {
 @Component({
   selector: 'docs-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, DocsLogoComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <a class="skip" href="#conteudo">Pular para o conteúdo</a>
 
     <header class="header">
       <div class="header__inner">
-        <a routerLink="/" class="brand" (click)="fecharMenu()">
-          <span class="brand__mark" aria-hidden="true">bd</span>
-          <span class="brand__name">bandeira-ui</span>
+        <a routerLink="/" class="brand" aria-label="bandeira-ui — início" (click)="fecharMenu()">
+          <docs-logo wordmark />
           <span class="brand__version">v{{ versao }}</span>
         </a>
 
@@ -125,18 +125,6 @@ interface NavGroup {
       font-weight: 700;
     }
 
-    .brand__mark {
-      display: grid;
-      place-items: center;
-      width: 30px;
-      height: 30px;
-      background: var(--bd-gradient);
-      border-radius: 8px;
-      color: #fff;
-      font-size: 0.78rem;
-      letter-spacing: -0.02em;
-    }
-
     .brand__version {
       padding: 0.1rem 0.45rem;
       background: var(--bd-primary-soft);
@@ -164,7 +152,9 @@ interface NavGroup {
       color: var(--bd-fg-muted);
       font-size: 1rem;
       cursor: pointer;
-      transition: color 0.2s ease, border-color 0.2s ease;
+      transition:
+        color 0.2s ease,
+        border-color 0.2s ease;
     }
     .icon-btn:hover {
       color: var(--bd-primary);
@@ -237,7 +227,10 @@ interface NavGroup {
       border-radius: 0 var(--bd-radius-sm) var(--bd-radius-sm) 0;
       color: var(--bd-fg-muted);
       font-size: 0.89rem;
-      transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+      transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease;
     }
 
     .nav a:hover {
@@ -279,7 +272,10 @@ interface NavGroup {
         background: var(--bd-bg-elevated);
         border-bottom: 1px solid var(--bd-border);
         visibility: hidden;
-        transition: max-height 0.3s ease, padding 0.3s ease, visibility 0.3s;
+        transition:
+          max-height 0.3s ease,
+          padding 0.3s ease,
+          visibility 0.3s;
       }
 
       .nav.is-open {
@@ -293,7 +289,7 @@ interface NavGroup {
 })
 export class DocsShellComponent {
   readonly theme = inject(ThemeService);
-  readonly versao = '0.1.0';
+  readonly versao = '0.2.0';
   readonly github = 'https://github.com/joaopedro-wq/bandeira-ui';
 
   readonly menuAberto = signal(false);
@@ -305,6 +301,16 @@ export class DocsShellComponent {
         { path: '/', label: 'Introdução' },
         { path: '/instalacao', label: 'Instalação' },
         { path: '/tokens', label: 'Tokens e temas' },
+      ],
+    },
+    {
+      label: 'Templates',
+      items: [
+        { path: '/templates', label: 'Visão geral' },
+        { path: '/templates/dashboard', label: 'Painel analítico' },
+        { path: '/templates/listagem', label: 'Listagem e cadastro' },
+        { path: '/templates/configuracoes', label: 'Configurações' },
+        { path: '/templates/assistente', label: 'Assistente por etapas' },
       ],
     },
     {
@@ -322,6 +328,7 @@ export class DocsShellComponent {
       label: 'Navegação',
       items: [
         { path: '/componentes/tabs', label: 'Tabs' },
+        { path: '/componentes/steps', label: 'Steps ★' },
         { path: '/componentes/accordion', label: 'Accordion' },
       ],
     },
@@ -342,6 +349,7 @@ export class DocsShellComponent {
     {
       label: 'Conteúdo',
       items: [
+        { path: '/componentes/table', label: 'Table ★' },
         { path: '/componentes/card', label: 'Card' },
         { path: '/componentes/chip', label: 'Chip' },
         { path: '/componentes/conteudo', label: 'Avatar & Badge' },

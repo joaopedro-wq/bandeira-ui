@@ -8,7 +8,7 @@ import {
   signal,
 } from '@angular/core';
 
-let contador = 0;
+let instanceCount = 0;
 
 /**
  * Aplica o estilo do design system em `<input>`, `<textarea>` e `<select>`.
@@ -55,7 +55,8 @@ let contador = 0;
       /* 16px evita o zoom automático do Safari no iOS. */
       font-size: var(--bd-text-base, 1rem);
       line-height: var(--bd-leading-normal, 1.6);
-      transition: border-color var(--bd-duration, 0.25s) ease,
+      transition:
+        border-color var(--bd-duration, 0.25s) ease,
         box-shadow var(--bd-duration, 0.25s) ease;
     }
 
@@ -111,7 +112,7 @@ export class BdInputComponent {
   /** Informe para fixar o `id`; do contrário um é gerado. */
   readonly inputId = input('', { alias: 'id' });
 
-  private readonly gerado = `bd-input-${contador++}`;
+  private readonly gerado = `bd-input-${instanceCount++}`;
 
   /** Preenchidos pelo `<bd-field>` que envolve este campo. */
   private readonly fieldDescribedBy = signal('');

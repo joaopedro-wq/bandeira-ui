@@ -1,18 +1,11 @@
-import {
-  DestroyRef,
-  Directive,
-  ElementRef,
-  afterNextRender,
-  inject,
-  input,
-} from '@angular/core';
+import { DestroyRef, Directive, ElementRef, afterNextRender, inject, input } from '@angular/core';
 
 /**
- * Anima um número de 0 até o valor final quando o elemento entra na viewport.
+ * Anima um número de 0 até o value final quando o elemento entra na viewport.
  *
  * Escreve direto no DOM via `requestAnimationFrame`, sem disparar change
  * detection a cada quadro. Seguro em SSR e respeita `prefers-reduced-motion`
- * (nesse caso mostra o valor final imediatamente).
+ * (nesse caso mostra o value final imediatamente).
  *
  * @example
  * ```html
@@ -61,7 +54,7 @@ export class BdCountUpDirective {
           this.animar();
         }
       },
-      { threshold: 0.4 }
+      { threshold: 0.4 },
     );
 
     this.observer.observe(this.host.nativeElement);
@@ -74,7 +67,7 @@ export class BdCountUpDirective {
 
     const passo = (agora: number) => {
       const t = Math.min(1, (agora - inicio) / total);
-      // easeOutExpo: acelera no início e assenta suave no valor final.
+      // easeOutExpo: acelera no início e assenta suave no value final.
       const eased = t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
       this.render(Math.round(alvo * eased));
 
@@ -86,7 +79,7 @@ export class BdCountUpDirective {
     this.frame = requestAnimationFrame(passo);
   }
 
-  private render(valor: number) {
-    this.host.nativeElement.textContent = `${this.prefix()}${valor}${this.suffix()}`;
+  private render(value: number) {
+    this.host.nativeElement.textContent = `${this.prefix()}${value}${this.suffix()}`;
   }
 }

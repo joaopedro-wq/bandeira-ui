@@ -50,7 +50,9 @@ import { DocsPageHeadComponent } from '../../shared/docs-page-head.component';
       [code]="cod2"
     >
       <button bdButton iconOnly aria-label="Excluir projeto" bdTooltip="Excluir projeto">🗑</button>
-      <button bdButton iconOnly variant="ghost" aria-label="Duplicar" bdTooltip="Duplicar">⧉</button>
+      <button bdButton iconOnly variant="ghost" aria-label="Duplicar" bdTooltip="Duplicar">
+        ⧉
+      </button>
       <button bdButton iconOnly variant="ghost" aria-label="Compartilhar" bdTooltip="Compartilhar">
         ↗
       </button>

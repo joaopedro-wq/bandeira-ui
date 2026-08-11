@@ -1,11 +1,14 @@
 <div align="center">
 
+<img src="projects/docs/public/logo.svg" width="72" height="72" alt="" />
+
 # bandeira-ui
 
-**Design system em Angular construído sobre CSS custom properties.**
+**Pare de recomeçar cada tela do zero.**
 
-O mesmo componente acompanha tema claro e escuro sem uma linha de configuração.
-Acessibilidade e `prefers-reduced-motion` vêm de fábrica, não como remendo.
+Painel, listagem, configurações e cadastro em etapas já vêm montados — com tabela, paginação,
+estados de carregamento e vazio resolvidos. Você conecta seus dados e entrega. A identidade visual
+é sua: uma linha de CSS muda o sistema inteiro.
 
 [![npm](https://img.shields.io/npm/v/bandeira-ui.svg)](https://www.npmjs.com/package/bandeira-ui)
 [![license](https://img.shields.io/npm/l/bandeira-ui.svg)](./LICENSE)
@@ -19,17 +22,20 @@ Acessibilidade e `prefers-reduced-motion` vêm de fábrica, não como remendo.
 
 ---
 
-## Por que existe
+## O problema
 
-Todo projeto novo recomeçava o botão, o card e o modal do zero — inconsistência visual e
-retrabalho a cada tela. A `bandeira-ui` resolve isso com três decisões:
+Todo projeto novo recomeça pelo botão, pelo card e pelo modal. Depois refaz, tela a tela, as mesmas
+decisões: onde vai o título, o que aparece enquanto a lista carrega, como a barra lateral se
+comporta no celular, em que ordem o teclado percorre o formulário. São horas gastas em escolhas já
+feitas dezenas de vezes — e que, refeitas, saem diferentes a cada tela.
 
-- **Tokens, não classes.** Redefina `--bd-primary` no seu `:root` e o sistema inteiro muda.
-  Sem recompilar, sem `!important`, sem sobrescrever seletor.
-- **Acessível por padrão.** Foco preso no modal, `tablist` completo por teclado, campos com
-  rótulo e descrição ligados sozinhos. Você não precisa lembrar de nada disso.
-- **Sem peso extra.** Componentes standalone, `OnPush` e signals. As animações são CSS puro —
-  a biblioteca não obriga ninguém a instalar `@angular/animations`.
+A `bandeira-ui` responde a isso em três níveis.
+
+| Nível           | O que entrega                                                                        |
+| --------------- | ------------------------------------------------------------------------------------ |
+| **Tokens**      | Uma custom property por decisão visual. Redefina no seu `:root` e tudo acompanha.     |
+| **Componentes** | 31 peças acessíveis desde o primeiro uso, do botão à tabela de dez mil linhas.        |
+| **Templates**   | Quatro telas completas, com carregando, vazio e comportamento no celular já decididos. |
 
 ## Instalação
 
@@ -60,44 +66,109 @@ import { BdButtonComponent, BdCardComponent } from 'bandeira-ui';
 export class MinhaTela {}
 ```
 
-Para protótipos, `BANDEIRA_UI` importa tudo de uma vez. Em produção, prefira importar só o que
-usar — o tree shaking agradece.
+`BANDEIRA_UI` importa o conjunto completo de uma vez — conveniente em protótipos. Em produção,
+importe apenas o que a tela utiliza: a eliminação de código não utilizado depende disso.
+
+## Templates de tela
+
+Todo sistema tem as mesmas quatro telas, e em todo projeto elas são remontadas do zero. Os
+templates fixam essas respostas uma única vez — e cada área continua um espaço aberto: nenhuma
+decisão sobre os seus dados é imposta.
+
+| Template                  | Resolve                                                            |
+| ------------------------- | ------------------------------------------------------------------ |
+| `<bd-dashboard-template>` | Painel: números no topo, análise no centro, contexto na lateral.   |
+| `<bd-list-template>`      | Listagem: busca, filtros, resultados e os três estados da lista.    |
+| `<bd-settings-template>`  | Preferências: seções com link próprio e barra de salvar condicional. |
+| `<bd-wizard-template>`    | Cadastro em etapas, sem deixar ninguém avançar com erro pendente.  |
+
+```html
+<bd-list-template
+  title="Projetos"
+  [loading]="carregando()"
+  [empty]="projetos().length === 0"
+>
+  <button bdButton bdListActions>Novo projeto</button>
+  <input bdInput bdListSearch type="search" placeholder="Buscar" />
+  <bd-empty-state bdListEmpty title="Nenhum projeto ainda" />
+
+  <bd-table [columns]="colunas" [rows]="projetos()" [trackBy]="porId" />
+
+  <bd-pagination bdListFooter [total]="total()" [(page)]="pagina" />
+</bd-list-template>
+```
 
 ## Componentes
 
-**Ações** · Button `[bdButton]` — seletor de atributo, serve em `<button>` e `<a>` sem wrapper; avisa em dev se `iconOnly` não tiver `aria-label`.
+**Ações** · Button `[bdButton]` — seletor de atributo, serve em `<button>` e `<a>` sem elemento
+extra; avisa em desenvolvimento quando `iconOnly` não tem `aria-label`.
 
-**Formulários** · Field `<bd-field>` liga `for`, `aria-describedby` e `aria-invalid` ao campo sozinho · Input `[bdInput]` · Switch `<bd-switch>` e Checkbox `<bd-checkbox>`, ambos com `ControlValueAccessor` e estado indeterminado.
+**Dados** · **Table** `<bd-table>` com ordenação, seleção, virtualização e carregamento sob
+demanda · **Pagination** `<bd-pagination>` com sequência condensada.
 
-**Navegação** · Tabs `<bd-tabs>` + `<bd-tab-panel>` com `tablist` WAI-ARIA completo (setas, Home/End, pula desabilitadas) · Accordion `<bd-accordion>`.
+**Formulários** · Field `<bd-field>` vincula `for`, `aria-describedby` e `aria-invalid`
+automaticamente · Input `[bdInput]` · Switch e Checkbox com `ControlValueAccessor` e estado
+indeterminado.
 
-**Feedback** · Alert `<bd-alert>` (papel ARIA conforme o tom) · Spinner · Skeleton · Progress · Modal `<bd-modal>` com foco preso e bottom sheet no mobile.
+**Navegação** · Tabs `<bd-tabs>` + `<bd-tab-panel>` com `tablist` WAI-ARIA completo · **Steps**
+`<bd-steps>` em cinco apresentações · Accordion `<bd-accordion>`.
 
-**Sobreposição** · Tooltip `[bdTooltip]` no hover **e** no foco · **Tour guiado** `<bd-tour>` + `BdTourService` — onboarding passo a passo que destaca elementos reais da página.
+**Feedback** · Alert (papel ARIA conforme o tom) · Spinner · Skeleton · Progress · Modal
+`<bd-modal>` com foco confinado, pilha coordenada e formato de bottom sheet no celular.
 
-**Conteúdo** · Card · Chip · Avatar (fallback para iniciais, cor derivada do nome) · Badge · Empty State · Metric.
+**Sobreposição** · Tooltip `[bdTooltip]` no ponteiro **e** no foco · **Tour guiado** `<bd-tour>` +
+`BdTourService` — integração passo a passo destacando elementos reais da página.
+
+**Estrutura** · App Shell · Auth Layout · Container · Page Header.
+
+**Conteúdo** · Card · Chip · Avatar (cor derivada do nome) · Badge · Empty State · Metric com
+variação.
 
 ### Diretivas
 
-| Diretiva | Uso |
-|---|---|
-| `bdReveal` | Revela no scroll: `up`, `down`, `left`, `right`, `scale` |
-| `bdCountUp` | Anima um número de 0 até o valor final |
+| Diretiva    | Uso                                                        |
+| ----------- | ---------------------------------------------------------- |
+| `bdReveal`  | Revela no scroll: `up`, `down`, `left`, `right`, `scale`    |
+| `bdCountUp` | Anima um número de zero até o valor final                   |
 
-Ambas usam `IntersectionObserver`, desconectam o observer após revelar e são seguras em SSR.
+Ambas usam `IntersectionObserver`, desconectam o observador após revelar e são compatíveis com
+renderização no servidor.
 
-### Tour guiado
+## Desempenho
+
+Tabela lenta é a reclamação número um de sistema administrativo. O que mantém a sua utilizável
+quando o cliente dobra o volume de dados:
+
+- **Dez mil linhas custam o mesmo que trinta.** Com `virtual`, o que é desenhado depende da altura
+  da janela, não do tamanho do relatório.
+- **O resto da tela não paga a conta.** `OnPush` e signals em toda a biblioteca: ordenar uma tabela
+  não dispara verificação na aplicação inteira.
+- **As linhas são reaproveitadas.** `trackBy` existe porque, sem ele, cada atualização joga fora o
+  corpo da tabela e o reconstrói — o que o usuário sente como travamento.
+- **A próxima página chega antes.** O carregamento sob demanda dispara com uma tela de
+  antecedência: o conteúdo já está lá quando o usuário chega.
+- **Sem `@angular/animations`.** As transições são CSS puro, compostas na GPU, e respeitam
+  `prefers-reduced-motion`.
+- **`sideEffects: false`** no pacote: o empacotador remove o que a sua aplicação não importar.
+
+Orientação por volume de dados na [documentação da tabela](https://joaopedro-wq.github.io/bandeira-ui/componentes/table).
+
+## Tour guiado
 
 ```ts
 private readonly tour = inject(BdTourService);
 
-this.tour.start([
+// `startOnce` registra a exibição e não repete o tour para este usuário.
+this.tour.startOnce('onboarding-v1', [
   { target: '#busca', title: 'Comece aqui', content: 'Encontre qualquer projeto.' },
   { target: '#filtros', title: 'Refine', content: 'Combine filtros para ver só o que interessa.' },
 ]);
 ```
 
-Monte `<bd-tour />` uma vez na raiz. O balão é um `role="dialog"` que recebe o foco a cada passo; setas navegam, `Esc` pula, e o alvo é rolado para o centro antes de ser destacado.
+Monte `<bd-tour />` uma vez na raiz. O destaque recorta o elemento real da página — não é imagem
+nem vídeo, então nunca desatualiza. O balão recebe o foco a cada passo, setas navegam e `Esc`
+encerra. E `outcome()` diz se o usuário concluiu e em que passo parou: o suficiente para descobrir
+onde a integração perde gente.
 
 ## Temas
 
@@ -108,8 +179,8 @@ Monte `<bd-tour />` uma vez na raiz. O balão é um `role="dialog"` que recebe o
 }
 ```
 
-O tema escuro entra com `data-theme="dark"` no elemento raiz. Sem atributo nenhum, a biblioteca
-segue o `prefers-color-scheme` do sistema.
+O tema escuro é ativado por `data-theme="dark"` no elemento raiz. Sem atributo, a biblioteca segue
+o `prefers-color-scheme` do sistema.
 
 ## Desenvolvimento
 
@@ -117,9 +188,13 @@ segue o `prefers-color-scheme` do sistema.
 npm install
 npm start          # site de documentação em http://localhost:4200
 npm run build:lib  # empacota em dist/bandeira-ui
-npm test           # testes unitários
-npm run pack:lib   # gera o tarball para inspecionar o que vai pro npm
+npm test           # 90 testes unitários
+npm run pack:lib   # gera o tarball para inspecionar o que vai ao npm
+npm run format     # aplica o Prettier
 ```
+
+A integração contínua verifica formatação, testes e empacotamento a cada push, e publica a
+documentação automaticamente.
 
 ## Licença
 

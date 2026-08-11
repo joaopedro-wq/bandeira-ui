@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
-let contador = 0;
+let instanceCount = 0;
 
 /**
  * Interruptor liga/desliga.
@@ -30,9 +30,7 @@ let contador = 0;
   selector: 'bd-switch',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [
-    { provide: NG_VALUE_ACCESSOR, useExisting: BdSwitchComponent, multi: true },
-  ],
+  providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: BdSwitchComponent, multi: true }],
   template: `
     <button
       type="button"
@@ -42,8 +40,8 @@ let contador = 0;
       [attr.aria-checked]="checked()"
       [attr.aria-labelledby]="labelId"
       [disabled]="disabled()"
-      (click)="alternar()"
-      (blur)="aoTocar()"
+      (click)="toggle()"
+      (blur)="onTouchedFn()"
     >
       <span class="bd-switch__thumb"></span>
     </button>
@@ -130,40 +128,40 @@ export class BdSwitchComponent implements ControlValueAccessor {
   readonly disabledInput = input(false, { alias: 'disabled', transform: booleanAttribute });
 
   /** Escrito pelo Reactive Forms via setDisabledState. */
-  private readonly disabledPorForm = signal(false);
+  private readonly disabledByForm = signal(false);
 
-  /** Vale desabilitado se veio do template OU do formulário. */
-  protected readonly disabled = computed(() => this.disabledInput() || this.disabledPorForm());
+  /** Vale isDisabled se veio do template OU do formulário. */
+  protected readonly disabled = computed(() => this.disabledInput() || this.disabledByForm());
 
-  private readonly uid = contador++;
+  private readonly uid = instanceCount++;
   protected readonly id = `bd-switch-${this.uid}`;
   protected readonly labelId = `bd-switch-label-${this.uid}`;
 
-  private aoMudar: (valor: boolean) => void = () => {};
-  protected aoTocar: () => void = () => {};
+  private onChangeFn: (value: boolean) => void = () => {};
+  protected onTouchedFn: () => void = () => {};
 
-  protected alternar() {
+  protected toggle() {
     if (this.disabled()) return;
     const novo = !this.checked();
     this.checked.set(novo);
-    this.aoMudar(novo);
+    this.onChangeFn(novo);
   }
 
   /* ---------------------------------------------- ControlValueAccessor --- */
 
-  writeValue(valor: boolean): void {
-    this.checked.set(!!valor);
+  writeValue(value: boolean): void {
+    this.checked.set(!!value);
   }
 
-  registerOnChange(fn: (valor: boolean) => void): void {
-    this.aoMudar = fn;
+  registerOnChange(fn: (value: boolean) => void): void {
+    this.onChangeFn = fn;
   }
 
   registerOnTouched(fn: () => void): void {
-    this.aoTocar = fn;
+    this.onTouchedFn = fn;
   }
 
-  setDisabledState(desabilitado: boolean): void {
-    this.disabledPorForm.set(desabilitado);
+  setDisabledState(isDisabled: boolean): void {
+    this.disabledByForm.set(isDisabled);
   }
 }

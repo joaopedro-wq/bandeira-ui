@@ -7,19 +7,26 @@ import {
   inject,
   input,
 } from '@angular/core';
+import { ensureBdRuntimeStyles } from '../core/bd-runtime-styles';
 
 export type BdTooltipPlacement = 'top' | 'bottom' | 'left' | 'right';
 
-let contador = 0;
+let instanceCount = 0;
 
 /**
- * Dica de texto que aparece no hover e no foco.
+ * Dica contextual exibida no ponteiro e no foco por teclado.
  *
- * Aparece também no foco por teclado — tooltip que só responde ao mouse é
- * inacessível. O elemento recebe `aria-describedby`, então o leitor de tela
- * anuncia a dica junto com o controle.
+ * A exibição no foco não é opcional: uma dica que responde apenas ao ponteiro
+ * é inacessível a quem navega por teclado. O elemento hospedeiro recebe
+ * `aria-describedby`, de modo que o leitor de tela anuncia a dica junto com o
+ * controle que ela descreve.
  *
- * Não use tooltip para informação essencial: em touch ela não aparece.
+ * O balão é renderizado no `<body>` para escapar de `overflow: hidden` e de
+ * contextos de empilhamento, e acompanha o alvo durante rolagem e
+ * redimensionamento.
+ *
+ * Dicas não devem carregar informação essencial: em dispositivos de toque não
+ * existe estado de ponteiro sobre o elemento.
  *
  * @example
  * ```html
@@ -34,84 +41,121 @@ let contador = 0;
 export class BdTooltipDirective {
   readonly bdTooltip = input.required<string>();
   readonly placement = input<BdTooltipPlacement>('top');
-  /** Atraso em ms antes de aparecer — evita piscar ao passar o mouse de raspão. */
+  /** Atraso de exibição em milissegundos — evita cintilação ao cruzar o alvo. */
   readonly showDelay = input(120);
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly document = inject(DOCUMENT);
 
-  private balao?: HTMLElement;
+  private bubble?: HTMLElement;
   private timer?: ReturnType<typeof setTimeout>;
-  private readonly id = `bd-tooltip-${contador++}`;
+  private frame?: number;
+  private readonly id = `bd-tooltip-${instanceCount++}`;
+
+  /** Reposiciona o balão junto com o alvo, no ritmo do compositor. */
+  private readonly onViewportChange = () => {
+    if (!this.bubble) return;
+    const view = this.document.defaultView;
+    if (!view) return;
+
+    if (this.frame !== undefined) view.cancelAnimationFrame(this.frame);
+    this.frame = view.requestAnimationFrame(() => {
+      this.frame = undefined;
+      if (this.bubble) this.position(this.bubble);
+    });
+  };
 
   constructor() {
-    inject(DestroyRef).onDestroy(() => this.esconder());
+    inject(DestroyRef).onDestroy(() => this.hide());
   }
 
   @HostListener('mouseenter')
   @HostListener('focus')
-  agendar() {
+  protected schedule(): void {
     clearTimeout(this.timer);
-    this.timer = setTimeout(() => this.mostrar(), this.showDelay());
+    this.timer = setTimeout(() => this.show(), this.showDelay());
   }
 
   @HostListener('mouseleave')
   @HostListener('blur')
   @HostListener('document:keydown.escape')
-  esconder() {
+  protected hide(): void {
     clearTimeout(this.timer);
-    this.balao?.remove();
-    this.balao = undefined;
+
+    const view = this.document.defaultView;
+    if (this.frame !== undefined && view) {
+      view.cancelAnimationFrame(this.frame);
+      this.frame = undefined;
+    }
+
+    if (this.bubble) {
+      view?.removeEventListener('scroll', this.onViewportChange, true);
+      view?.removeEventListener('resize', this.onViewportChange);
+      this.bubble.remove();
+      this.bubble = undefined;
+    }
+
     this.host.nativeElement.removeAttribute('aria-describedby');
   }
 
-  private mostrar() {
-    if (this.balao || !this.bdTooltip()) return;
+  private show(): void {
+    if (this.bubble || !this.bdTooltip()) return;
 
-    const balao = this.document.createElement('div');
-    balao.id = this.id;
-    balao.className = `bd-tooltip bd-tooltip--${this.placement()}`;
-    balao.setAttribute('role', 'tooltip');
-    balao.textContent = this.bdTooltip();
-    this.document.body.appendChild(balao);
-    this.balao = balao;
+    ensureBdRuntimeStyles(this.document);
+
+    const bubble = this.document.createElement('div');
+    bubble.id = this.id;
+    bubble.className = `bd-tooltip bd-tooltip--${this.placement()}`;
+    bubble.setAttribute('role', 'tooltip');
+    bubble.textContent = this.bdTooltip();
+    this.document.body.appendChild(bubble);
+    this.bubble = bubble;
 
     this.host.nativeElement.setAttribute('aria-describedby', this.id);
-    this.posicionar(balao);
+    this.position(bubble);
+
+    const view = this.document.defaultView;
+    // Captura na fase de descida: alcança a rolagem de qualquer ancestral,
+    // não apenas a da janela.
+    view?.addEventListener('scroll', this.onViewportChange, { passive: true, capture: true });
+    view?.addEventListener('resize', this.onViewportChange, { passive: true });
   }
 
-  private posicionar(balao: HTMLElement) {
-    const alvo = this.host.nativeElement.getBoundingClientRect();
-    const b = balao.getBoundingClientRect();
-    const espaco = 8;
+  private position(bubble: HTMLElement): void {
+    const view = this.document.defaultView;
+    if (!view) return;
+
+    const target = this.host.nativeElement.getBoundingClientRect();
+    const box = bubble.getBoundingClientRect();
+    const gap = 8;
     let top = 0;
     let left = 0;
 
     switch (this.placement()) {
       case 'top':
-        top = alvo.top - b.height - espaco;
-        left = alvo.left + alvo.width / 2 - b.width / 2;
+        top = target.top - box.height - gap;
+        left = target.left + target.width / 2 - box.width / 2;
         break;
       case 'bottom':
-        top = alvo.bottom + espaco;
-        left = alvo.left + alvo.width / 2 - b.width / 2;
+        top = target.bottom + gap;
+        left = target.left + target.width / 2 - box.width / 2;
         break;
       case 'left':
-        top = alvo.top + alvo.height / 2 - b.height / 2;
-        left = alvo.left - b.width - espaco;
+        top = target.top + target.height / 2 - box.height / 2;
+        left = target.left - box.width - gap;
         break;
       case 'right':
-        top = alvo.top + alvo.height / 2 - b.height / 2;
-        left = alvo.right + espaco;
+        top = target.top + target.height / 2 - box.height / 2;
+        left = target.right + gap;
         break;
     }
 
-    // Nunca deixa o balão sair da viewport.
-    const margem = 8;
-    left = Math.min(Math.max(margem, left), window.innerWidth - b.width - margem);
-    top = Math.min(Math.max(margem, top), window.innerHeight - b.height - margem);
+    // Mantém o balão dentro da área visível nos dois eixos.
+    const margin = 8;
+    left = Math.min(Math.max(margin, left), view.innerWidth - box.width - margin);
+    top = Math.min(Math.max(margin, top), view.innerHeight - box.height - margin);
 
-    balao.style.top = `${top}px`;
-    balao.style.left = `${left}px`;
+    bubble.style.top = `${top}px`;
+    bubble.style.left = `${left}px`;
   }
 }

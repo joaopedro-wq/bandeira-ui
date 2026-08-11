@@ -1,31 +1,46 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { BdButtonComponent, BdCardComponent, BdChipComponent, BdMetricComponent } from 'bandeira-ui';
+import {
+  BdButtonComponent,
+  BdCardComponent,
+  BdChipComponent,
+  BdMetricComponent,
+} from 'bandeira-ui';
+import { DocsLogoComponent } from '../shared/docs-logo.component';
 import { ThemeService } from '../shared/theme.service';
 
 @Component({
   selector: 'docs-intro',
   standalone: true,
-  imports: [RouterLink, BdButtonComponent, BdCardComponent, BdChipComponent, BdMetricComponent],
+  imports: [
+    RouterLink,
+    BdButtonComponent,
+    BdCardComponent,
+    BdChipComponent,
+    BdMetricComponent,
+    DocsLogoComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="hero">
-      <bd-chip tone="accent">v0.1.0 · Angular 20+</bd-chip>
+      <docs-logo [size]="64" class="hero__logo" />
+
+      <bd-chip tone="accent">v0.2.0 · Angular 20+</bd-chip>
 
       <h1>
-        Design system que <span class="grad">muda de tema</span><br />
-        sem mudar de código.
+        Pare de recomeçar<br />
+        <span class="grad">cada tela do zero.</span>
       </h1>
 
       <p class="lead">
-        Componentes Angular standalone construídos sobre CSS custom properties. Redefina
-        <code>--bd-primary</code> no seu <code>:root</code> e o sistema inteiro acompanha — sem
-        recompilar, sem <code>!important</code>, sem sobrescrever seletor.
+        Painel, listagem, configurações e cadastro em etapas já vêm montados — com tabela,
+        paginação, estados de carregamento e vazio resolvidos. Você conecta seus dados e entrega.
+        A identidade visual é sua: uma linha de CSS muda o sistema inteiro.
       </p>
 
       <div class="hero__actions">
         <a bdButton size="lg" routerLink="/instalacao">Começar</a>
-        <a bdButton variant="ghost" size="lg" routerLink="/componentes/button">Ver componentes</a>
+        <a bdButton variant="ghost" size="lg" routerLink="/templates">Ver templates</a>
       </div>
 
       <button type="button" class="hint" (click)="theme.toggle()">
@@ -36,39 +51,49 @@ import { ThemeService } from '../shared/theme.service';
 
     <section class="pillars">
       <bd-card>
-        <span class="pillar__icon" aria-hidden="true">◐</span>
-        <h2>Tokens, não classes</h2>
+        <span class="pillar__icon" aria-hidden="true">▤</span>
+        <h2>Telas, não só peças</h2>
         <p>
-          Toda cor, raio, sombra e duração vem de uma custom property. Trocar a identidade visual
-          é editar um bloco de CSS — não caçar sobrescrita componente por componente.
+          Quatro <a routerLink="/templates">templates</a> entregam painel, listagem, configurações
+          e assistente já montados. O que costuma ser reescrito em cada tela — carregando, vazio,
+          o que acontece no celular — vem decidido.
+        </p>
+      </bd-card>
+
+      <bd-card>
+        <span class="pillar__icon" aria-hidden="true">◐</span>
+        <h2>A marca é sua</h2>
+        <p>
+          Toda cor, raio, sombra e duração vem de uma custom property. Trocar a identidade visual é
+          editar um bloco de CSS — e não caçar sobrescrita componente por componente.
         </p>
       </bd-card>
 
       <bd-card>
         <span class="pillar__icon" aria-hidden="true">⌨</span>
-        <h2>Acessível por padrão</h2>
+        <h2>Acessível sem esforço</h2>
         <p>
-          Foco preso no modal, <code>tablist</code> completo por teclado, campos com rótulo e
-          descrição ligados sozinhos. Você não precisa lembrar de nada disso — já vem pronto.
+          Foco preso no modal, abas completas por teclado, campos com rótulo e descrição ligados
+          sozinhos. Sua equipe entrega interface acessível sem precisar lembrar de nada disso.
         </p>
       </bd-card>
 
       <bd-card>
         <span class="pillar__icon" aria-hidden="true">⚡</span>
-        <h2>Leve de propósito</h2>
+        <h2>Rápido com dados reais</h2>
         <p>
-          Standalone, <code>OnPush</code> e signals. As animações são CSS puro: a biblioteca não
-          obriga ninguém a instalar <code>@angular/animations</code> nem a chamar
-          <code>provideAnimations()</code>.
+          A <a routerLink="/componentes/table">tabela</a> exibe dez mil linhas no mesmo custo de
+          trinta. Detecção <code>OnPush</code>, signals e animações em CSS puro: nada de
+          <code>@angular/animations</code> obrigatório.
         </p>
       </bd-card>
     </section>
 
     <section class="numbers">
-      <bd-metric [value]="23" label="componentes e diretivas" gradient />
-      <bd-metric [value]="0" label="dependências além do CDK" gradient />
-      <bd-metric [value]="2" label="temas prontos" gradient />
-      <bd-metric [value]="100" suffix="%" label="tipado em TypeScript" gradient />
+      <bd-metric [value]="31" label="componentes e diretivas" gradient />
+      <bd-metric [value]="4" label="templates de tela" gradient />
+      <bd-metric [value]="102" label="testes automatizados" gradient />
+      <bd-metric [value]="1" label="dependência: o CDK" gradient />
     </section>
 
     <section class="quick">
@@ -102,9 +127,9 @@ import { ThemeService } from '../shared/theme.service';
     </section>
 
     <section class="cta">
-      <h2>Pronto para começar?</h2>
-      <p>A instalação completa leva menos de um minuto.</p>
-      <a bdButton size="lg" routerLink="/instalacao">Ir para a instalação</a>
+      <h2>Sua próxima tela começa pronta</h2>
+      <p>Instalação em menos de um minuto. Sem configuração de tema, sem setup de acessibilidade.</p>
+      <a bdButton size="lg" routerLink="/instalacao">Instalar agora</a>
     </section>
   `,
   styles: `
@@ -117,6 +142,11 @@ import { ThemeService } from '../shared/theme.service';
     .hero {
       padding: 2rem 0 4rem;
       border-bottom: 1px solid var(--bd-border);
+    }
+
+    .hero__logo {
+      display: block;
+      margin-bottom: 1.5rem;
     }
 
     .hero h1 {

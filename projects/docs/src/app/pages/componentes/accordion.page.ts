@@ -7,12 +7,7 @@ import { DocsPageHeadComponent } from '../../shared/docs-page-head.component';
 @Component({
   selector: 'docs-accordion-page',
   standalone: true,
-  imports: [
-    BdAccordionComponent,
-    DocsDemoComponent,
-    DocsApiComponent,
-    DocsPageHeadComponent,
-  ],
+  imports: [BdAccordionComponent, DocsDemoComponent, DocsApiComponent, DocsPageHeadComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <docs-page-head
@@ -23,9 +18,9 @@ import { DocsPageHeadComponent } from '../../shared/docs-page-head.component';
     />
 
     <div class="callout">
-      <strong>Cuidado com o que você esconde.</strong> Conteúdo dentro de um accordion fechado não
-      é lido por quem passa os olhos na página, e é ignorado pelo Ctrl+F do navegador. Se a
-      informação é importante para a decisão do usuário, ela não deveria estar aqui.
+      <strong>Cuidado com o que você esconde.</strong> Conteúdo dentro de um accordion fechado não é
+      lido por quem passa os olhos na página, e é ignorado pelo Ctrl+F do navegador. Se a informação
+      é importante para a decisão do usuário, ela não deveria estar aqui.
     </div>
 
     <docs-demo
@@ -57,10 +52,10 @@ import { DocsPageHeadComponent } from '../../shared/docs-page-head.component';
 
     <div class="callout callout--accent">
       <strong>Estrutura acessível.</strong> Cada cabeçalho é um <code>&lt;button&gt;</code> dentro
-      de um <code>&lt;h3&gt;</code>, com <code>aria-expanded</code> e <code>aria-controls</code>
-      ligados ao painel, que por sua vez é um <code>role="region"</code> rotulado pelo botão. É
-      essa estrutura que permite navegar por seções num leitor de tela — um
-      <code>&lt;div&gt;</code> clicável não faz isso.
+      de um <code>&lt;h3&gt;</code>, com <code>aria-expanded</code> e
+      <code>aria-controls</code> ligados ao painel, que por sua vez é um
+      <code>role="region"</code> rotulado pelo botão. É essa estrutura que permite navegar por
+      seções num leitor de tela — um <code>&lt;div&gt;</code> clicável não faz isso.
     </div>
 
     <docs-api [rows]="api" />

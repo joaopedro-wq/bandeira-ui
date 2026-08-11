@@ -121,7 +121,9 @@ const ICONES: Record<BdAlertTone, string> = {
       line-height: 1;
       cursor: pointer;
       opacity: 0.65;
-      transition: opacity 0.2s ease, background 0.2s ease;
+      transition:
+        opacity 0.2s ease,
+        background 0.2s ease;
     }
     .bd-alert__close:hover {
       opacity: 1;
@@ -169,6 +171,6 @@ export class BdAlertComponent {
 
   /** Erro e aviso interrompem o leitor de tela; os demais só anunciam. */
   protected readonly papel = computed(() =>
-    this.tone() === 'danger' || this.tone() === 'warning' ? 'alert' : 'status'
+    this.tone() === 'danger' || this.tone() === 'warning' ? 'alert' : 'status',
   );
 }

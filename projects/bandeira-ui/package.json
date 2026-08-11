@@ -1,6 +1,6 @@
 {
   "name": "bandeira-ui",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Design system em Angular construído sobre CSS custom properties — o mesmo componente acompanha tema claro e escuro sem configuração.",
   "keywords": [
     "angular",

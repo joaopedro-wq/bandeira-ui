@@ -32,8 +32,10 @@ export type BdCardPadding = 'none' | 'sm' | 'md' | 'lg';
       border-radius: var(--bd-radius-lg, 1.25rem);
       box-shadow: var(--bd-shadow-sm, 0 1px 2px rgba(16, 19, 28, 0.06));
       color: var(--bd-fg, #10131c);
-      transition: transform var(--bd-duration, 0.25s) var(--bd-ease, ease),
-        box-shadow var(--bd-duration, 0.25s) ease, border-color var(--bd-duration, 0.25s) ease;
+      transition:
+        transform var(--bd-duration, 0.25s) var(--bd-ease, ease),
+        box-shadow var(--bd-duration, 0.25s) ease,
+        border-color var(--bd-duration, 0.25s) ease;
     }
 
     /* As classes ficam no host, então precisam de :host(.classe). */
@@ -88,6 +90,6 @@ export class BdCardComponent {
       this.dashed() ? 'bd-card--dashed' : '',
     ]
       .filter(Boolean)
-      .join(' ')
+      .join(' '),
   );
 }

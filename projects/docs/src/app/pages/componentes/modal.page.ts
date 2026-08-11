@@ -1,5 +1,10 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { BdButtonComponent, BdFieldComponent, BdInputComponent, BdModalComponent } from 'bandeira-ui';
+import {
+  BdButtonComponent,
+  BdFieldComponent,
+  BdInputComponent,
+  BdModalComponent,
+} from 'bandeira-ui';
 import { DocsDemoComponent } from '../../shared/docs-demo.component';
 import { DocsApiComponent, DocsApiRow } from '../../shared/docs-api.component';
 import { DocsPageHeadComponent } from '../../shared/docs-page-head.component';
@@ -42,8 +47,8 @@ import { DocsPageHeadComponent } from '../../shared/docs-page-head.component';
 
       <bd-modal [(open)]="basico" title="Confirmar publicação">
         <p class="p">
-          Isto vai publicar a versão atual para todos os usuários. A ação pode ser revertida em
-          até 24 horas.
+          Isto vai publicar a versão atual para todos os usuários. A ação pode ser revertida em até
+          24 horas.
         </p>
         <div class="acoes">
           <button bdButton variant="ghost" (click)="basico.set(false)">Cancelar</button>

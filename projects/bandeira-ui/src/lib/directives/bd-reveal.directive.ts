@@ -1,4 +1,5 @@
 import {
+  DOCUMENT,
   DestroyRef,
   Directive,
   ElementRef,
@@ -7,18 +8,23 @@ import {
   input,
   booleanAttribute,
 } from '@angular/core';
+import { ensureBdRuntimeStyles } from '../core/bd-runtime-styles';
 
 export type BdRevealDirection = 'up' | 'down' | 'left' | 'right' | 'scale';
 
 /**
  * Revela o elemento quando ele entra na viewport.
  *
- * A transição vive no CSS (`bandeira-ui/styles/animations`) e move apenas
- * `opacity` e `transform`, então roda na thread de composição e não trava a
- * rolagem. O observer é desconectado assim que o elemento aparece.
+ * A transição anima apenas `opacity` e `transform` — propriedades compostas
+ * na GPU —, portanto não bloqueia a rolagem. O observador é desconectado assim
+ * que o elemento entra em cena.
  *
- * Seguro em SSR: a configuração roda dentro de `afterNextRender`, que só
- * executa no browser.
+ * Não exige configuração de estilos: as regras de base são garantidas em tempo
+ * de execução e permanecem sobrescrevíveis pela folha
+ * `bandeira-ui/styles/animations` ou pelo CSS da aplicação.
+ *
+ * Compatível com renderização no servidor: a configuração ocorre dentro de
+ * `afterNextRender`, que só executa no navegador.
  *
  * @example
  * ```html
@@ -42,20 +48,24 @@ export class BdRevealDirective {
   readonly revealOnce = input(true, { transform: booleanAttribute });
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly document = inject(DOCUMENT);
   private observer?: IntersectionObserver;
 
   constructor() {
     inject(DestroyRef).onDestroy(() => this.observer?.disconnect());
 
-    afterNextRender(() => this.configurar());
+    afterNextRender(() => this.setup());
   }
 
-  private configurar() {
+  private setup() {
     const el = this.host.nativeElement;
-    const semMovimento = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    ensureBdRuntimeStyles(this.document);
 
-    // Sem IntersectionObserver ou com movimento reduzido: mostra tudo direto.
-    if (semMovimento || typeof IntersectionObserver === 'undefined') {
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Sem IntersectionObserver ou com movimento reduzido, o conteúdo aparece
+    // imediatamente: a animação é enfeite, o conteúdo é o que importa.
+    if (reducedMotion || typeof IntersectionObserver === 'undefined') {
       el.classList.add('bd-reveal', 'is-visible');
       return;
     }
@@ -80,7 +90,7 @@ export class BdRevealDirective {
         }
       },
       // Dispara um pouco antes da borda inferior: o movimento fica natural.
-      { threshold: 0.12, rootMargin: '0px 0px -60px 0px' }
+      { threshold: 0.12, rootMargin: '0px 0px -60px 0px' },
     );
 
     this.observer.observe(el);

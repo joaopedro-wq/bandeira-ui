@@ -9,13 +9,13 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
-let contador = 0;
+let instanceCount = 0;
 
 /**
  * Caixa de seleção.
  *
  * Suporta o estado indeterminado — o "traço" que representa seleção parcial
- * numa lista de filhos. Ele é visual e ARIA, não um terceiro valor: ao clicar,
+ * numa lista de filhos. Ele é visual e ARIA, não um terceiro value: ao clicar,
  * o controle vira marcado.
  *
  * @example
@@ -28,9 +28,7 @@ let contador = 0;
   selector: 'bd-checkbox',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [
-    { provide: NG_VALUE_ACCESSOR, useExisting: BdCheckboxComponent, multi: true },
-  ],
+  providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: BdCheckboxComponent, multi: true }],
   template: `
     <button
       type="button"
@@ -40,17 +38,20 @@ let contador = 0;
       [attr.aria-checked]="indeterminate() ? 'mixed' : checked()"
       [attr.aria-labelledby]="labelId"
       [disabled]="disabled()"
-      (click)="alternar()"
-      (blur)="aoTocar()"
+      (click)="toggle()"
+      (blur)="onTouchedFn()"
     >
       <span class="bd-checkbox__mark" aria-hidden="true">
         {{ indeterminate() ? '–' : '✓' }}
       </span>
     </button>
 
-    <label class="bd-checkbox__label" [id]="labelId" [attr.for]="id">
+    <!-- O atributo for só vincula elementos rotuláveis, e um button não é um
+         deles: o vínculo semântico vem de aria-labelledby, e o clique no
+         rótulo é encaminhado explicitamente. -->
+    <span class="bd-checkbox__label" [id]="labelId" (click)="toggle()">
       <ng-content />
-    </label>
+    </span>
   `,
   host: { '[class.bd-checkbox--disabled]': 'disabled()' },
   styles: `
@@ -72,7 +73,8 @@ let contador = 0;
       border: 1.5px solid var(--bd-border-strong, #cbd2e2);
       border-radius: 0.35rem;
       cursor: pointer;
-      transition: background var(--bd-duration-fast, 0.15s) ease,
+      transition:
+        background var(--bd-duration-fast, 0.15s) ease,
         border-color var(--bd-duration-fast, 0.15s) ease;
     }
 
@@ -103,7 +105,8 @@ let contador = 0;
       line-height: 1;
       opacity: 0;
       transform: scale(0.6);
-      transition: opacity var(--bd-duration-fast, 0.15s) ease,
+      transition:
+        opacity var(--bd-duration-fast, 0.15s) ease,
         transform var(--bd-duration-fast, 0.15s) var(--bd-ease, ease);
     }
 
@@ -143,43 +146,43 @@ export class BdCheckboxComponent implements ControlValueAccessor {
   readonly disabledInput = input(false, { alias: 'disabled', transform: booleanAttribute });
 
   /** Escrito pelo Reactive Forms via setDisabledState. */
-  private readonly disabledPorForm = signal(false);
+  private readonly disabledByForm = signal(false);
 
-  /** Vale desabilitado se veio do template OU do formulário. */
-  protected readonly disabled = computed(() => this.disabledInput() || this.disabledPorForm());
+  /** Vale isDisabled se veio do template OU do formulário. */
+  protected readonly disabled = computed(() => this.disabledInput() || this.disabledByForm());
 
-  private readonly uid = contador++;
+  private readonly uid = instanceCount++;
   protected readonly id = `bd-checkbox-${this.uid}`;
   protected readonly labelId = `bd-checkbox-label-${this.uid}`;
 
-  private aoMudar: (valor: boolean) => void = () => {};
-  protected aoTocar: () => void = () => {};
+  private onChangeFn: (value: boolean) => void = () => {};
+  protected onTouchedFn: () => void = () => {};
 
-  protected alternar() {
+  protected toggle() {
     if (this.disabled()) return;
 
     // Indeterminado sempre resolve para marcado — é o comportamento nativo.
     const novo = this.indeterminate() ? true : !this.checked();
     this.indeterminate.set(false);
     this.checked.set(novo);
-    this.aoMudar(novo);
+    this.onChangeFn(novo);
   }
 
   /* ---------------------------------------------- ControlValueAccessor --- */
 
-  writeValue(valor: boolean): void {
-    this.checked.set(!!valor);
+  writeValue(value: boolean): void {
+    this.checked.set(!!value);
   }
 
-  registerOnChange(fn: (valor: boolean) => void): void {
-    this.aoMudar = fn;
+  registerOnChange(fn: (value: boolean) => void): void {
+    this.onChangeFn = fn;
   }
 
   registerOnTouched(fn: () => void): void {
-    this.aoTocar = fn;
+    this.onTouchedFn = fn;
   }
 
-  setDisabledState(desabilitado: boolean): void {
-    this.disabledPorForm.set(desabilitado);
+  setDisabledState(isDisabled: boolean): void {
+    this.disabledByForm.set(isDisabled);
   }
 }

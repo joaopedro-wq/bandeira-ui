@@ -25,8 +25,8 @@ import { BdButtonComponent } from 'bandeira-ui';
     <section>
       <h2><span class="n">2</span> Traga os tokens</h2>
       <p>
-        Sem isto os componentes renderizam com as cores de fallback embutidas — funcionam, mas
-        você perde o tema e a customização.
+        Sem isto os componentes renderizam com as cores de fallback embutidas — funcionam, mas você
+        perde o tema e a customização.
       </p>
       <pre><code>// styles.scss
 &#64;use 'bandeira-ui/styles';</code></pre>
@@ -54,9 +54,8 @@ import { BdButtonComponent } from 'bandeira-ui';
 export class MinhaTela &#123;&#125;</code></pre>
 
       <div class="callout">
-        <strong>Atalho para protótipo.</strong> <code>BANDEIRA_UI</code> importa tudo de uma vez.
-        Em produção prefira importar só o que usar — assim o tree shaking consegue descartar o
-        resto.
+        <strong>Atalho para protótipo.</strong> <code>BANDEIRA_UI</code> importa tudo de uma vez. Em
+        produção prefira importar só o que usar — assim o tree shaking consegue descartar o resto.
         <pre><code>import &#123; BANDEIRA_UI &#125; from 'bandeira-ui';
 
 &#64;Component(&#123; imports: [BANDEIRA_UI] &#125;)</code></pre>
@@ -79,9 +78,18 @@ export class MinhaTela &#123;&#125;</code></pre>
     <section>
       <h2>Compatibilidade</h2>
       <ul class="compat">
-        <li><strong>Angular 20+</strong> — usa signals, <code>input()</code> e a sintaxe <code>&#64;if</code>/<code>&#64;for</code></li>
-        <li><strong>SSR</strong> — as diretivas de scroll rodam só no browser, via <code>afterNextRender</code></li>
-        <li><strong>Navegadores</strong> — os que suportam CSS custom properties e <code>IntersectionObserver</code></li>
+        <li>
+          <strong>Angular 20+</strong> — usa signals, <code>input()</code> e a sintaxe
+          <code>&#64;if</code>/<code>&#64;for</code>
+        </li>
+        <li>
+          <strong>SSR</strong> — as diretivas de scroll rodam só no browser, via
+          <code>afterNextRender</code>
+        </li>
+        <li>
+          <strong>Navegadores</strong> — os que suportam CSS custom properties e
+          <code>IntersectionObserver</code>
+        </li>
       </ul>
     </section>
 

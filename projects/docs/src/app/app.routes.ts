@@ -81,6 +81,18 @@ export const routes: Routes = [
           import('./pages/componentes/feedback.page').then((m) => m.FeedbackPageComponent),
       },
       {
+        path: 'componentes/steps',
+        title: `Steps · ${T}`,
+        loadComponent: () =>
+          import('./pages/componentes/steps.page').then((m) => m.StepsPageComponent),
+      },
+      {
+        path: 'componentes/table',
+        title: `Table · ${T}`,
+        loadComponent: () =>
+          import('./pages/componentes/table.page').then((m) => m.TablePageComponent),
+      },
+      {
         path: 'componentes/accordion',
         title: `Accordion · ${T}`,
         loadComponent: () =>
@@ -103,6 +115,42 @@ export const routes: Routes = [
         title: `Tour guiado · ${T}`,
         loadComponent: () =>
           import('./pages/componentes/tour.page').then((m) => m.TourPageComponent),
+      },
+
+      /* Templates */
+      {
+        path: 'templates',
+        title: `Templates · ${T}`,
+        loadComponent: () =>
+          import('./pages/templates/templates.page').then((m) => m.TemplatesPageComponent),
+      },
+      {
+        path: 'templates/dashboard',
+        title: `Painel analítico · ${T}`,
+        loadComponent: () =>
+          import('./pages/templates/dashboard.page').then((m) => m.TemplateDashboardPageComponent),
+      },
+      {
+        path: 'templates/listagem',
+        title: `Listagem e cadastro · ${T}`,
+        loadComponent: () =>
+          import('./pages/templates/listagem.page').then((m) => m.TemplateListagemPageComponent),
+      },
+      {
+        path: 'templates/configuracoes',
+        title: `Configurações · ${T}`,
+        loadComponent: () =>
+          import('./pages/templates/configuracoes.page').then(
+            (m) => m.TemplateConfiguracoesPageComponent,
+          ),
+      },
+      {
+        path: 'templates/assistente',
+        title: `Assistente por etapas · ${T}`,
+        loadComponent: () =>
+          import('./pages/templates/assistente.page').then(
+            (m) => m.TemplateAssistentePageComponent,
+          ),
       },
 
       /* Diretivas */

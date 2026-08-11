@@ -198,9 +198,7 @@ export class ControlesPageComponent {
   }
 
   alternar(id: string, valor: boolean) {
-    this.permissoes.update((lista) =>
-      lista.map((p) => (p.id === id ? { ...p, ativo: valor } : p))
-    );
+    this.permissoes.update((lista) => lista.map((p) => (p.id === id ? { ...p, ativo: valor } : p)));
   }
 
   readonly codSwitch = `<bd-switch [(checked)]="notificacoes">

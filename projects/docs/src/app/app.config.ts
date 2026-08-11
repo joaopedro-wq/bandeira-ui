@@ -14,7 +14,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(
       routes,
       // Cada página de componente abre no topo, e âncoras continuam funcionando.
-      withInMemoryScrolling({ scrollPositionRestoration: 'enabled', anchorScrolling: 'enabled' })
+      withInMemoryScrolling({ scrollPositionRestoration: 'enabled', anchorScrolling: 'enabled' }),
     ),
   ],
 };

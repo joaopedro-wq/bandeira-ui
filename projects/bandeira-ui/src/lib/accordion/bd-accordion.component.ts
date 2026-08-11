@@ -43,7 +43,7 @@ export interface BdAccordionItem {
             [attr.aria-expanded]="estaAberto(item.id)"
             [attr.aria-controls]="'bd-acc-panel-' + item.id"
             [disabled]="item.disabled || null"
-            (click)="alternar(item)"
+            (click)="toggle(item)"
           >
             <span class="bd-accordion__title">{{ item.title }}</span>
             <span class="bd-accordion__chevron" aria-hidden="true">⌄</span>
@@ -160,7 +160,7 @@ export class BdAccordionComponent {
     return this.opened().includes(id);
   }
 
-  protected alternar(item: BdAccordionItem) {
+  protected toggle(item: BdAccordionItem) {
     if (item.disabled) return;
 
     const abertas = this.opened();

@@ -43,9 +43,9 @@ import { DocsPageHeadComponent } from '../../shared/docs-page-head.component';
 
     <div class="callout">
       <strong>Por que não usar interpolação.</strong> Animar um número com
-      <code>{{ exemploInterpolacao }}</code> dispara change detection a cada quadro — 60
-      ciclos por segundo para atualizar um texto. Esta diretiva escreve no
-      <code>textContent</code> direto e deixa o Angular fora do laço.
+      <code>{{ exemploInterpolacao }}</code> dispara change detection a cada quadro — 60 ciclos por
+      segundo para atualizar um texto. Esta diretiva escreve no <code>textContent</code> direto e
+      deixa o Angular fora do laço.
     </div>
 
     <docs-api [rows]="api" />

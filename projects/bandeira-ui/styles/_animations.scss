@@ -11,7 +11,8 @@
 .bd-reveal {
   opacity: 0;
   /* Só opacity e transform: propriedades que o browser compõe na GPU. */
-  transition: opacity var(--bd-duration-slow, 0.5s) var(--bd-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+  transition:
+    opacity var(--bd-duration-slow, 0.5s) var(--bd-ease, cubic-bezier(0.16, 1, 0.3, 1)),
     transform var(--bd-duration-slow, 0.5s) var(--bd-ease, cubic-bezier(0.16, 1, 0.3, 1));
   will-change: opacity, transform;
 }

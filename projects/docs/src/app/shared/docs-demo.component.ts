@@ -114,7 +114,9 @@ import { ChangeDetectionStrategy, Component, booleanAttribute, input, signal } f
       font-family: var(--bd-font-mono);
       font-size: 0.72rem;
       cursor: pointer;
-      transition: color 0.2s ease, border-color 0.2s ease;
+      transition:
+        color 0.2s ease,
+        border-color 0.2s ease;
     }
 
     .demo__copy:hover {

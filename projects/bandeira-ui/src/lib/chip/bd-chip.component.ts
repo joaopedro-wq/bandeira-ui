@@ -101,7 +101,8 @@ export type BdChipTone = 'primary' | 'accent' | 'neutral' | 'success' | 'warning
       line-height: 1;
       cursor: pointer;
       opacity: 0.7;
-      transition: opacity var(--bd-duration-fast, 0.15s) ease,
+      transition:
+        opacity var(--bd-duration-fast, 0.15s) ease,
         background var(--bd-duration-fast, 0.15s) ease;
     }
 
@@ -131,6 +132,6 @@ export class BdChipComponent {
   protected readonly classes = computed(() =>
     [`bd-chip--${this.tone()}`, this.outlined() ? 'bd-chip--outlined' : '']
       .filter(Boolean)
-      .join(' ')
+      .join(' '),
   );
 }

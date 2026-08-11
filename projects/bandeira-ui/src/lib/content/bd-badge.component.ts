@@ -126,6 +126,6 @@ export class BdBadgeComponent {
   });
 
   protected readonly classes = computed(() =>
-    [`bd-badge--${this.tone()}`, this.dot() ? 'bd-badge--dot' : ''].filter(Boolean).join(' ')
+    [`bd-badge--${this.tone()}`, this.dot() ? 'bd-badge--dot' : ''].filter(Boolean).join(' '),
   );
 }

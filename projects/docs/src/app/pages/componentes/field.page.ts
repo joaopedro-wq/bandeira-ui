@@ -25,9 +25,9 @@ import { DocsPageHeadComponent } from '../../shared/docs-page-head.component';
     />
 
     <div class="callout">
-      <strong>Por que isso importa.</strong> Um rótulo cujo <code>for</code> não aponta para o
-      campo é decoração: clicar nele não foca o input, e o leitor de tela anuncia um campo sem
-      nome. Aqui essa ligação não depende de quem consome lembrar — ela é feita pelo componente.
+      <strong>Por que isso importa.</strong> Um rótulo cujo <code>for</code> não aponta para o campo
+      é decoração: clicar nele não foca o input, e o leitor de tela anuncia um campo sem nome. Aqui
+      essa ligação não depende de quem consome lembrar — ela é feita pelo componente.
     </div>
 
     <docs-demo title="Básico" [code]="cod1" column>

@@ -20,7 +20,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    @if (visivel()) {
+    @if (isVisible()) {
       <ng-content />
     }
   `,
@@ -28,9 +28,9 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
     role: 'tabpanel',
     '[id]': '"bd-panel-" + tabId()',
     '[attr.aria-labelledby]': '"bd-tab-" + tabId()',
-    '[hidden]': '!visivel()',
+    '[hidden]': '!isVisible()',
     // Painel focável pelo teclado quando não há elemento interativo dentro.
-    '[attr.tabindex]': 'visivel() ? 0 : null',
+    '[attr.tabindex]': 'isVisible() ? 0 : null',
   },
   styles: `
     :host {
@@ -56,5 +56,5 @@ export class BdTabPanelComponent {
   /** O `id` da aba ativa no momento. */
   readonly active = input.required<string>();
 
-  protected readonly visivel = computed(() => this.active() === this.tabId());
+  protected readonly isVisible = computed(() => this.active() === this.tabId());
 }

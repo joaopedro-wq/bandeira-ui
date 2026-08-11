@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   DOCUMENT,
+  DestroyRef,
   HostListener,
   booleanAttribute,
   effect,
@@ -10,20 +11,25 @@ import {
   model,
 } from '@angular/core';
 import { A11yModule } from '@angular/cdk/a11y';
+import { BdOverlayStackService } from '../core/bd-overlay-stack.service';
+import { BdScrollLockService } from '../core/bd-scroll-lock.service';
 
-let contador = 0;
+let instanceCount = 0;
 
 /**
  * Diálogo modal acessível.
  *
- * Prende o foco dentro do diálogo (`cdkTrapFocus`), fecha com `Esc` e clique no
- * fundo, trava a rolagem da página e devolve o foco ao elemento que o abriu.
- * No celular vira bottom sheet, ao alcance do polegar.
+ * Confina o foco (`cdkTrapFocus`), encerra com `Esc` ou clique no fundo, trava
+ * a rolagem da página e devolve o foco ao elemento que o abriu. Abaixo de
+ * 600px assume o formato de bottom sheet, ao alcance do polegar.
+ *
+ * Diálogos empilhados são coordenados: a trava de rolagem é contada por
+ * referência e `Esc` encerra apenas o diálogo do topo da pilha.
  *
  * @example
  * ```html
- * <bd-modal [(open)]="mostrar" title="Entre em contato">
- *   <p>Conteúdo do diálogo</p>
+ * <bd-modal [(open)]="confirmacaoAberta" title="Excluir projeto">
+ *   <p>Esta ação não pode ser desfeita.</p>
  * </bd-modal>
  * ```
  */
@@ -34,7 +40,7 @@ let contador = 0;
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (open()) {
-      <div class="bd-modal__overlay" (click)="fechar()">
+      <div class="bd-modal__overlay" (click)="close()">
         <div
           class="bd-modal__panel"
           role="dialog"
@@ -50,7 +56,7 @@ let contador = 0;
               type="button"
               class="bd-modal__close"
               [attr.aria-label]="closeLabel()"
-              (click)="fechar()"
+              (click)="close()"
             >
               &times;
             </button>
@@ -142,8 +148,10 @@ let contador = 0;
       font-size: 1.5rem;
       line-height: 1;
       cursor: pointer;
-      transition: color var(--bd-duration, 0.25s) ease,
-        border-color var(--bd-duration, 0.25s) ease, background var(--bd-duration, 0.25s) ease;
+      transition:
+        color var(--bd-duration, 0.25s) ease,
+        border-color var(--bd-duration, 0.25s) ease,
+        background var(--bd-duration, 0.25s) ease;
     }
 
     .bd-modal__close:hover {
@@ -189,36 +197,56 @@ export class BdModalComponent {
   readonly dismissible = input(true, { transform: booleanAttribute });
   readonly closeLabel = input('Fechar');
 
-  protected readonly titleId = `bd-modal-title-${contador++}`;
+  protected readonly titleId = `bd-modal-title-${instanceCount++}`;
 
   private readonly document = inject(DOCUMENT);
-  private origemDoFoco: HTMLElement | null = null;
+  private readonly scrollLock = inject(BdScrollLockService);
+  private readonly overlayStack = inject(BdOverlayStackService);
+
+  private focusOrigin: HTMLElement | null = null;
+  private locked = false;
 
   constructor() {
-    effect(() => {
-      if (this.open()) {
-        this.origemDoFoco = this.document.activeElement as HTMLElement | null;
-        this.document.body.style.overflow = 'hidden';
-      } else {
-        this.document.body.style.overflow = '';
-        // cdkTrapFocus já devolve o foco, mas garantimos o retorno quando o
-        // diálogo é fechado por código e não por interação.
-        this.origemDoFoco?.focus();
-        this.origemDoFoco = null;
-      }
-    });
+    // O efeito reage apenas às transições reais de estado: um diálogo fechado
+    // nunca toca no documento, e cada `lock()` tem exatamente um `release()`.
+    effect(() => (this.open() ? this.onOpen() : this.onClose()));
+
+    inject(DestroyRef).onDestroy(() => this.onClose());
   }
 
   @HostListener('document:keydown.escape')
-  onEscape() {
-    if (this.open() && this.dismissible()) {
+  protected onEscape(): void {
+    // Com diálogos empilhados, apenas o do topo responde ao atalho.
+    if (this.open() && this.dismissible() && this.overlayStack.isTopmost(this)) {
       this.open.set(false);
     }
   }
 
-  fechar() {
+  protected close(): void {
     if (this.dismissible()) {
       this.open.set(false);
     }
+  }
+
+  private onOpen(): void {
+    if (this.locked) return;
+    this.locked = true;
+
+    this.focusOrigin = this.document.activeElement as HTMLElement | null;
+    this.overlayStack.push(this);
+    this.scrollLock.lock();
+  }
+
+  private onClose(): void {
+    if (!this.locked) return;
+    this.locked = false;
+
+    this.overlayStack.remove(this);
+    this.scrollLock.release();
+
+    // `cdkTrapFocus` restaura o foco na interação; a devolução explícita cobre
+    // o fechamento por código, quando não houve interação a restaurar.
+    this.focusOrigin?.focus();
+    this.focusOrigin = null;
   }
 }

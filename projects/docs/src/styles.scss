@@ -1,0 +1,59 @@
+/*
+ * Estilos globais do site de documentação.
+ *
+ * Aqui usamos caminho relativo porque a lib vive no mesmo workspace.
+ * Quem instala o pacote escreve:
+ *   @use 'bandeira-ui/styles/tokens';
+ *   @use 'bandeira-ui/styles/animations';
+ */
+@use '../../bandeira-ui/styles';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 88px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--bd-bg);
+  color: var(--bd-fg);
+  font-family: var(--bd-font-sans);
+  font-size: var(--bd-text-base);
+  line-height: var(--bd-leading-normal);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color var(--bd-duration) ease, color var(--bd-duration) ease;
+}
+
+img,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: var(--bd-primary);
+  text-decoration: none;
+}
+
+::selection {
+  background: var(--bd-primary);
+  color: var(--bd-primary-contrast);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

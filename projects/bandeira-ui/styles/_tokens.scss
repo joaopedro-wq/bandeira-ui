@@ -1,0 +1,183 @@
+/* ==========================================================================
+   bandeira-ui — tokens de tema
+
+   Importe uma vez na aplicação:
+     @use 'bandeira-ui/styles/tokens';
+
+   Para customizar, redefina qualquer variável no seu próprio :root — não é
+   preciso recompilar a biblioteca nem sobrescrever classe:
+     :root { --bd-primary: #7c3aed; --bd-radius: 0.5rem; }
+   ========================================================================== */
+
+:root {
+  /* ---------------------------------------------------------------- Cores */
+  --bd-bg: #ffffff;
+  --bd-bg-elevated: #f8fafc;
+  --bd-surface: #ffffff;
+  --bd-surface-hover: #f1f3f9;
+  --bd-border: #e3e7f0;
+  --bd-border-strong: #cbd2e2;
+
+  --bd-fg: #10131c;
+  --bd-fg-muted: #545c70;
+  --bd-fg-subtle: #7b8399;
+
+  --bd-primary: #3d5ce8;
+  --bd-primary-strong: #2b46c9;
+  --bd-primary-soft: rgba(61, 92, 232, 0.1);
+  --bd-primary-contrast: #ffffff;
+
+  --bd-accent: #0d9488;
+  --bd-accent-soft: rgba(13, 148, 136, 0.1);
+  --bd-accent-contrast: #ffffff;
+
+  --bd-success: #16a34a;
+  --bd-success-soft: rgba(22, 163, 74, 0.1);
+  --bd-warning: #d97706;
+  --bd-warning-soft: rgba(217, 119, 6, 0.1);
+  --bd-danger: #dc2626;
+  --bd-danger-soft: rgba(220, 38, 38, 0.1);
+  --bd-danger-contrast: #ffffff;
+  --bd-info: #0284c7;
+  --bd-info-soft: rgba(2, 132, 199, 0.1);
+
+  --bd-gradient: linear-gradient(120deg, #3d5ce8 0%, #7c4ddb 45%, #0d9488 100%);
+
+  /* ----------------------------------------------------------- Tipografia */
+  --bd-font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --bd-font-mono: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+
+  --bd-text-xs: 0.75rem;
+  --bd-text-sm: 0.875rem;
+  --bd-text-base: 1rem;
+  --bd-text-lg: 1.125rem;
+  --bd-text-xl: 1.375rem;
+  --bd-text-2xl: 1.75rem;
+  --bd-text-3xl: 2.25rem;
+
+  --bd-weight-normal: 400;
+  --bd-weight-medium: 500;
+  --bd-weight-semibold: 600;
+  --bd-weight-bold: 700;
+
+  --bd-leading-tight: 1.25;
+  --bd-leading-normal: 1.6;
+
+  /* ------------------------------------------------------------ Espaçamento */
+  --bd-space-1: 0.25rem;
+  --bd-space-2: 0.5rem;
+  --bd-space-3: 0.75rem;
+  --bd-space-4: 1rem;
+  --bd-space-5: 1.5rem;
+  --bd-space-6: 2rem;
+  --bd-space-7: 3rem;
+
+  /* ----------------------------------------------------------------- Forma */
+  --bd-radius-sm: 0.5rem;
+  --bd-radius: 0.875rem;
+  --bd-radius-lg: 1.25rem;
+  --bd-radius-full: 9999px;
+
+  /* -------------------------------------------------------------- Elevação */
+  --bd-shadow-sm: 0 1px 2px rgba(16, 19, 28, 0.06);
+  --bd-shadow-md: 0 8px 24px rgba(16, 19, 28, 0.08);
+  --bd-shadow-lg: 0 24px 60px rgba(16, 19, 28, 0.12);
+
+  /* -------------------------------------------------------------- Movimento */
+  --bd-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --bd-duration-fast: 0.15s;
+  --bd-duration: 0.25s;
+  --bd-duration-slow: 0.5s;
+
+  /* ---------------------------------------------------------------- Camadas */
+  --bd-z-dropdown: 100;
+  --bd-z-modal: 200;
+  --bd-z-toast: 300;
+  --bd-z-tooltip: 400;
+
+  /* Foco visível — mesma regra em todos os componentes */
+  --bd-focus-ring: 0 0 0 3px var(--bd-primary-soft);
+
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --bd-bg: #0a0c12;
+  --bd-bg-elevated: #10131c;
+  --bd-surface: #141824;
+  --bd-surface-hover: #1b2030;
+  --bd-border: #232838;
+  --bd-border-strong: #303751;
+
+  --bd-fg: #f2f4f8;
+  --bd-fg-muted: #9aa3b8;
+  --bd-fg-subtle: #6b7488;
+
+  --bd-primary: #6d8cff;
+  --bd-primary-strong: #4f6ef7;
+  --bd-primary-soft: rgba(109, 140, 255, 0.14);
+  --bd-primary-contrast: #ffffff;
+
+  --bd-accent: #4fd8c4;
+  --bd-accent-soft: rgba(79, 216, 196, 0.14);
+  --bd-accent-contrast: #06251f;
+
+  --bd-success: #4ade80;
+  --bd-success-soft: rgba(74, 222, 128, 0.14);
+  --bd-warning: #fbbf24;
+  --bd-warning-soft: rgba(251, 191, 36, 0.14);
+  --bd-danger: #f87171;
+  --bd-danger-soft: rgba(248, 113, 113, 0.14);
+  --bd-danger-contrast: #2b0b0b;
+  --bd-info: #38bdf8;
+  --bd-info-soft: rgba(56, 189, 248, 0.14);
+
+  --bd-gradient: linear-gradient(120deg, #6d8cff 0%, #9d7bff 45%, #4fd8c4 100%);
+
+  --bd-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --bd-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --bd-shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.55);
+
+  color-scheme: dark;
+}
+
+/* Segue a preferência do sistema quando o app não fixou um tema. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']):not([data-theme='dark']) {
+    --bd-bg: #0a0c12;
+    --bd-bg-elevated: #10131c;
+    --bd-surface: #141824;
+    --bd-surface-hover: #1b2030;
+    --bd-border: #232838;
+    --bd-border-strong: #303751;
+
+    --bd-fg: #f2f4f8;
+    --bd-fg-muted: #9aa3b8;
+    --bd-fg-subtle: #6b7488;
+
+    --bd-primary: #6d8cff;
+    --bd-primary-strong: #4f6ef7;
+    --bd-primary-soft: rgba(109, 140, 255, 0.14);
+
+    --bd-accent: #4fd8c4;
+    --bd-accent-soft: rgba(79, 216, 196, 0.14);
+    --bd-accent-contrast: #06251f;
+
+    --bd-success: #4ade80;
+    --bd-success-soft: rgba(74, 222, 128, 0.14);
+    --bd-warning: #fbbf24;
+    --bd-warning-soft: rgba(251, 191, 36, 0.14);
+    --bd-danger: #f87171;
+    --bd-danger-soft: rgba(248, 113, 113, 0.14);
+    --bd-info: #38bdf8;
+    --bd-info-soft: rgba(56, 189, 248, 0.14);
+
+    --bd-gradient: linear-gradient(120deg, #6d8cff 0%, #9d7bff 45%, #4fd8c4 100%);
+
+    --bd-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --bd-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+    --bd-shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.55);
+
+    color-scheme: dark;
+  }
+}

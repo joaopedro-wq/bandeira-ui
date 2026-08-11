@@ -1,0 +1,62 @@
+/* ==========================================================================
+   bandeira-ui — estilos globais das diretivas de animação
+
+   Diretivas não têm estilo encapsulado, então estas classes precisam ser
+   globais. Importe uma vez na aplicação:
+     @use 'bandeira-ui/styles/animations';
+   ========================================================================== */
+
+/* --------------------------------------------------------- bdReveal ----- */
+
+.bd-reveal {
+  opacity: 0;
+  /* Só opacity e transform: propriedades que o browser compõe na GPU. */
+  transition: opacity var(--bd-duration-slow, 0.5s) var(--bd-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+    transform var(--bd-duration-slow, 0.5s) var(--bd-ease, cubic-bezier(0.16, 1, 0.3, 1));
+  will-change: opacity, transform;
+}
+
+.bd-reveal--up {
+  transform: translateY(32px);
+}
+.bd-reveal--down {
+  transform: translateY(-32px);
+}
+.bd-reveal--left {
+  transform: translateX(-36px);
+}
+.bd-reveal--right {
+  transform: translateX(36px);
+}
+.bd-reveal--scale {
+  transform: scale(0.94);
+}
+
+.bd-reveal.is-visible {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
+/* ------------------------------------------------------ Acessibilidade --- */
+
+/* Conteúdo lido por leitores de tela, invisível na tela. */
+.bd-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bd-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}

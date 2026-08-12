@@ -6,7 +6,7 @@
     "start": "ng serve docs",
     "build": "ng build docs",
     "postbuild": "node scripts/spa-fallback.mjs",
-    "build:lib": "ng build bandeira-ui",
+    "build:lib": "ng build bandeira-ui && node scripts/copy-lib-meta.mjs",
     "watch:lib": "ng build bandeira-ui --watch --configuration development",
     "test": "ng test bandeira-ui --watch=false --browsers=ChromeHeadless",
     "test:watch": "ng test bandeira-ui",

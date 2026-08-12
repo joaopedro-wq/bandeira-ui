@@ -14,7 +14,7 @@ estados de carregamento e vazio resolvidos. Você conecta seus dados e entrega. 
 [![license](https://img.shields.io/npm/l/bandeira-ui.svg)](./LICENSE)
 [![Angular](https://img.shields.io/badge/Angular-20%2B-dd0031.svg)](https://angular.dev)
 
-[Documentação](https://joaopedro-wq.github.io/bandeira-ui/) ·
+[Documentação](https://bandeira-ui.vercel.app/) ·
 [npm](https://www.npmjs.com/package/bandeira-ui) ·
 [Changelog](./CHANGELOG.md)
 
@@ -151,7 +151,7 @@ quando o cliente dobra o volume de dados:
   `prefers-reduced-motion`.
 - **`sideEffects: false`** no pacote: o empacotador remove o que a sua aplicação não importar.
 
-Orientação por volume de dados na [documentação da tabela](https://joaopedro-wq.github.io/bandeira-ui/componentes/table).
+Orientação por volume de dados na [documentação da tabela](https://bandeira-ui.vercel.app/componentes/table).
 
 ## Tour guiado
 
